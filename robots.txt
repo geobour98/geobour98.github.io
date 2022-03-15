@@ -1,0 +1,5 @@
+User-agent: *
+Disallow:
+Sitemap: https://geobour98.com/sitemap.xml
+
+# Nothing interesting here! Go away!
