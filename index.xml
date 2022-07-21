@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>geobour98</title>
+    <link>https://geobour98.com/</link>
+    <description>Recent content on geobour98</description>
+    <image>
+      <url>https://geobour98.com/47</url>
+      <link>https://geobour98.com/47</link>
+    </image>
+    <generator>Hugo -- gohugo.io</generator><atom:link href="https://geobour98.com/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title></title>
+      <link>https://geobour98.com/about/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://geobour98.com/about/</guid>
+      <description>About Me 👋 Hello, I am George Bourlakis, Security Researcher and Enthusiast. 📍 I live in Athens, Greece. 💻 Interested in anything related to penetration testing, red/blue teaming, malware analysis and CTF challenges in general. Education 🎓 Diploma, Integrated Master of Science - MSci, Computer Engineering and Informatics Department, University of Patras.
+  My diploma thesis &#34;Artificial Intelligence algorithms to detect malware in TLS traffic&#34; can be found in Nemertes or in Github.</description>
+    </item>
+    
+    <item>
+      <title></title>
+      <link>https://geobour98.com/blog/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://geobour98.com/blog/</guid>
+      <description>Blog Coming Soon! </description>
+    </item>
+    
+  </channel>
+</rss>
