@@ -2,13 +2,28 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
+    <loc>https://geobour98.github.io/blog/</loc>
+    <lastmod>2023-02-27T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://geobour98.github.io/</loc>
+    <lastmod>2023-02-27T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://geobour98.github.io/blog/maldev-essentials-assignment/</loc>
+    <lastmod>2023-02-27T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://geobour98.github.io/tags/malware-development/</loc>
+    <lastmod>2023-02-27T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://geobour98.github.io/tags/</loc>
+    <lastmod>2023-02-27T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://geobour98.github.io/tags/windows/</loc>
+    <lastmod>2023-02-27T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>https://geobour98.github.io/tags/base64/</loc>
     <lastmod>2023-01-06T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://geobour98.github.io/tags/file-upload/</loc>
-    <lastmod>2023-01-06T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://geobour98.github.io/</loc>
     <lastmod>2023-01-06T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://geobour98.github.io/tags/iconv/</loc>
@@ -30,9 +45,6 @@
     <lastmod>2023-01-06T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://geobour98.github.io/tags/sudo/</loc>
-    <lastmod>2023-01-06T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://geobour98.github.io/tags/</loc>
     <lastmod>2023-01-06T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://geobour98.github.io/write-ups/techsupp0rt1/</loc>
@@ -117,9 +129,6 @@
     <lastmod>2022-11-19T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://geobour98.github.io/tags/vhosts/</loc>
-    <lastmod>2022-11-19T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://geobour98.github.io/tags/windows/</loc>
     <lastmod>2022-11-19T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://geobour98.github.io/tags/xxd/</loc>
@@ -279,8 +288,6 @@
     <lastmod>2022-08-22T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://geobour98.github.io/about/</loc>
-  </url><url>
-    <loc>https://geobour98.github.io/blog/</loc>
   </url><url>
     <loc>https://geobour98.github.io/categories/</loc>
   </url><url>
