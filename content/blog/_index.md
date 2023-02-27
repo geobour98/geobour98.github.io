@@ -1,3 +1,4 @@
 ---
-title: "Blog Coming Soon!"
+title: "Blog"
+author: geobour98
 ---
