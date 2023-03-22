@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>systemctl on geobour98</title>
+    <link>https://geobour98.github.io/tags/systemctl/</link>
+    <description>Recent content in systemctl on geobour98</description>
+    <image>
+      <title>geobour98</title>
+      <url>https://geobour98.github.io/47</url>
+      <link>https://geobour98.github.io/47</link>
+    </image>
+    <generator>Hugo -- gohugo.io</generator>
+    <lastBuildDate>Sat, 10 Sep 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://geobour98.github.io/tags/systemctl/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>TryHackMe - VulnNet: Node</title>
+      <link>https://geobour98.github.io/write-ups/vulnnetnode/</link>
+      <pubDate>Sat, 10 Sep 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://geobour98.github.io/write-ups/vulnnetnode/</guid>
+      <description>Introduction This is a TryHackMe room which can be found at: VulnNet: Node
+After the previous breach, VulnNet Entertainment states it won&amp;rsquo;t happen again. Can you prove they&amp;rsquo;re wrong?
+Reconnaissance &amp;amp; Scanning Perform nmap scan to identify open ports and services.
+ Command: nmap -p- -T4 -v 10.10.213.208  geobour98@kali:~$ nmap -p- -T4 -v 10.10.213.208 Starting Nmap 7.92 ( https://nmap.org ) at 2022-09-04 10:44 EEST Initiating Ping Scan at 10:44 Scanning 10.</description>
+    </item>
+    
+  </channel>
+</rss>
