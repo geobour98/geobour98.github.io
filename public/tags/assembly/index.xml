@@ -10,7 +10,17 @@
       <link>https://geobour98.github.io/47</link>
     </image>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Sat, 25 Mar 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://geobour98.github.io/tags/assembly/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 29 Mar 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://geobour98.github.io/tags/assembly/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>SLAE32 - Assignment #4 - Custom Encoder</title>
+      <link>https://geobour98.github.io/blog/slae32-4-custom-encoder/</link>
+      <pubDate>Wed, 29 Mar 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://geobour98.github.io/blog/slae32-4-custom-encoder/</guid>
+      <description>Introduction This is the blog post for the 4th Assignment of the SLAE32 course, which is offered by PentesterAcademy. The course focuses on teaching the basics of 32-bit Assembly language for the Intel Architecture (IA-32) family of processors on the Linux platform.
+The purpose of this assignment is to create a custom encoder (encrypter), which obfuscates the shellcode in order to evade detection. The following operations were used: XOR each byte with a static key and ADD a constant number.</description>
+    </item>
+    
     <item>
       <title>SLAE32 - Assignment #3 - Egg Hunter</title>
       <link>https://geobour98.github.io/blog/slae32-3-egg-hunter/</link>
