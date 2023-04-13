@@ -10,7 +10,17 @@
       <link>https://geobour98.github.io/47</link>
     </image>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Thu, 06 Apr 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://geobour98.github.io/blog/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 13 Apr 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://geobour98.github.io/blog/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>SLAE64 - Assignment #1 - TCP Bind Shell</title>
+      <link>https://geobour98.github.io/blog/slae64-1-bind-shell/</link>
+      <pubDate>Thu, 13 Apr 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://geobour98.github.io/blog/slae64-1-bind-shell/</guid>
+      <description>Introduction This is the blog post for the 1st Assignment of the SLAE64 course, which is offered by PentesterAcademy. The course focuses on teaching the basics of 64-bit Assembly language for the Intel Architecture (IA-x86_64) family of processors on the Linux platform.
+The purpose of this assignment is to create a TCP Bind Shell. A Bind Shell has a listener running on the target machine, by opening a port, and the attacker connects to that listener in order to gain a remote shell.</description>
+    </item>
+    
     <item>
       <title>SLAE32 - Assignment #7 - Custom Crypter</title>
       <link>https://geobour98.github.io/blog/slae32-7-custom-crypter/</link>
