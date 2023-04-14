@@ -375,13 +375,13 @@ We clear the `RDX` register and the value `0`, because of the single protocol, i
     xor rdx, rdx            ; 0 value because of single protocol
 ```
 
-Then, in order to actulally execute the syscall, we run the following instruction:
+Then, in order to actually execute the syscall, we run the following instruction:
 
 ```nasm
     syscall                 ; exec socket syscall
 ```
 
-The `socket` syscall returns a file descriptor (`sockfd`), so we copy it to the `RDI` register, since the result of the syscall is saved in the `EAX` register by default.
+The `socket` syscall returns a file descriptor (`sockfd`), so we copy it to the `RDI` register, since the result of the syscall is saved in the `RAX` register by default.
 
 ```nasm
     mov rdi, rax            ; move sockfd (file descriptor) value into rdi
@@ -413,7 +413,7 @@ Then, since we are dealing with little endianness the port with decimal value `4
 After that, we move the value `2`, where `RSP` points minus 8 bytes, for the `AF_INET` constant.
 
 ```nasm
-    mov word [rsp - 8], 0x2         ; AF_INET constant
+    mov byte [rsp - 8], 0x2         ; AF_INET constant
 ```
 
 We restore `RSP` register that now points at the top of the stack.
