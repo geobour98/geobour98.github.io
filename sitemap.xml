@@ -3,27 +3,30 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://geobour98.github.io/tags/assembly/</loc>
-    <lastmod>2023-04-14T00:00:00+00:00</lastmod>
+    <lastmod>2023-04-15T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://geobour98.github.io/blog/</loc>
-    <lastmod>2023-04-14T00:00:00+00:00</lastmod>
+    <lastmod>2023-04-15T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://geobour98.github.io/tags/exploit-development/</loc>
-    <lastmod>2023-04-14T00:00:00+00:00</lastmod>
+    <lastmod>2023-04-15T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://geobour98.github.io/</loc>
-    <lastmod>2023-04-14T00:00:00+00:00</lastmod>
+    <lastmod>2023-04-15T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://geobour98.github.io/tags/shellcode/</loc>
-    <lastmod>2023-04-14T00:00:00+00:00</lastmod>
+    <lastmod>2023-04-15T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://geobour98.github.io/tags/slae64/</loc>
-    <lastmod>2023-04-14T00:00:00+00:00</lastmod>
+    <lastmod>2023-04-15T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://geobour98.github.io/blog/slae64-2-reverse-shell/</loc>
-    <lastmod>2023-04-14T00:00:00+00:00</lastmod>
+    <loc>https://geobour98.github.io/blog/slae64-3-egg-hunter/</loc>
+    <lastmod>2023-04-15T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://geobour98.github.io/tags/</loc>
+    <lastmod>2023-04-15T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://geobour98.github.io/blog/slae64-2-reverse-shell/</loc>
     <lastmod>2023-04-14T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://geobour98.github.io/blog/slae64-1-bind-shell/</loc>
