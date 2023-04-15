@@ -22,6 +22,16 @@ The purpose of this assignment is to create an Egg Hunter shellcode. An Egg Hunt
     </item>
     
     <item>
+      <title>SLAE64 - Assignment #4 - Custom Encoder</title>
+      <link>https://geobour98.github.io/blog/slae64-4-custom-encoder/</link>
+      <pubDate>Sat, 15 Apr 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://geobour98.github.io/blog/slae64-4-custom-encoder/</guid>
+      <description>Introduction This is the blog post for the 4th Assignment of the SLAE64 course, which is offered by PentesterAcademy. The course focuses on teaching the basics of 64-bit Assembly language for the Intel Architecture (IA-x86_64) family of processors on the Linux platform.
+The purpose of this assignment is to create a custom encoder (encrypter), which obfuscates the shellcode in order to evade detection. The following operations were used: XOR each byte with a static key and SUB a constant number.</description>
+    </item>
+    
+    <item>
       <title>SLAE64 - Assignment #2 - TCP Reverse Shell</title>
       <link>https://geobour98.github.io/blog/slae64-2-reverse-shell/</link>
       <pubDate>Fri, 14 Apr 2023 00:00:00 +0000</pubDate>
