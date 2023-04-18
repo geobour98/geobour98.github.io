@@ -10,7 +10,17 @@
       <link>https://geobour98.github.io/47</link>
     </image>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Mon, 17 Apr 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://geobour98.github.io/tags/shellcode/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 18 Apr 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://geobour98.github.io/tags/shellcode/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>SLAE64 - Assignment #6 - Polymorphic Shellcodes</title>
+      <link>https://geobour98.github.io/blog/slae64-6-polymorphic-shellcodes/</link>
+      <pubDate>Tue, 18 Apr 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://geobour98.github.io/blog/slae64-6-polymorphic-shellcodes/</guid>
+      <description>Introduction This is the blog post for the 6th Assignment of the SLAE64 course, which is offered by PentesterAcademy. The course focuses on teaching the basics of 64-bit Assembly language for the Intel Architecture (IA-x86_64) family of processors on the Linux platform.
+The purpose of this assignment is to take 3 shellcodes from Shell-Storm from the Intel x86-64 category and create polymorphic versions of them in order to beat pattern matching.</description>
+    </item>
+    
     <item>
       <title>SLAE64 - Assignment #5 - Analysis of msfvenom payloads</title>
       <link>https://geobour98.github.io/blog/slae64-5-msfvenom-payloads/</link>
