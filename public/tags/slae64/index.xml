@@ -10,7 +10,17 @@
       <link>https://geobour98.github.io/47</link>
     </image>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Tue, 18 Apr 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://geobour98.github.io/tags/slae64/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 19 Apr 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://geobour98.github.io/tags/slae64/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>SLAE64 - Assignment #7 - Custom Crypter</title>
+      <link>https://geobour98.github.io/blog/slae64-7-custom-crypter/</link>
+      <pubDate>Wed, 19 Apr 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://geobour98.github.io/blog/slae64-7-custom-crypter/</guid>
+      <description>Introduction This is the blog post for the 7th and final Assignment of the SLAE64 course, which is offered by PentesterAcademy. The course focuses on teaching the basics of 64-bit Assembly language for the Intel Architecture (IA-x86_64) family of processors on the Linux platform.
+The purpose of this assignment is to encrypt the shellcode with an existing encryption schema and decrypt and execute it at runtime. The algorithm that was used is AES and the key length is 256 bits (32 bytes).</description>
+    </item>
+    
     <item>
       <title>SLAE64 - Assignment #6 - Polymorphic Shellcodes</title>
       <link>https://geobour98.github.io/blog/slae64-6-polymorphic-shellcodes/</link>
