@@ -13,11 +13,11 @@ title: "About Me"
 
 ## Education
 
-:mortar_board: MSc, Cybersecurity, UCLan Cyprus.
+:mortar_board: MSc, Cybersecurity, UCLan Cyprus
 {{< rawhtml >}}<br> {{< /rawhtml >}}
 *Sep 2022 - Jul 2024*
 
-:mortar_board: MEng, Computer Engineering and Informatics Department, University of Patras.
+:mortar_board: MEng, Computer Engineering and Informatics Department, University of Patras
 {{< rawhtml >}}<br> {{< /rawhtml >}}
 *Sep 2016 - Nov 2021*
 
@@ -27,13 +27,11 @@ title: "About Me"
 
 - {{< rawhtml >}}<a href="https://www.credly.com/badges/ec4971c6-3b70-4401-8db3-9ac7bb1a0d3c/public_url" target="_blank" style="color:#E30F0F;">Certified Information Systems Security Professional (CISSP)</a>{{< /rawhtml >}}
 
-- {{< rawhtml >}}<a href="https://www.credly.com/badges/a4bce446-d0d4-43c7-9c71-e13b2263c8a9/public_url" target="_blank" style="color:#E30F0F;">CompTIA PenTest +</a> {{< /rawhtml >}}
+- {{< rawhtml >}}<a href="https://www.credential.net/1e7d1370-a1a9-4cb7-8256-1c785528ca71#gs.25r9tf" target="_blank" style="color:#E30F0F;">Practical Junior Malware Researcher (PJMR)</a> {{< /rawhtml >}}
 
-- {{< rawhtml >}}Certified AppSec Practitioner (CAP), SecOps Group{{< /rawhtml >}}
+- {{< rawhtml >}}x86 Assembly Language and Shellcoding on Linux (SLAE32){{< /rawhtml >}}
 
-- {{< rawhtml >}}<a href="https://www.credly.com/badges/eced6b62-9a7f-4018-bc13-8e7b36ca3718/public_url" target="_blank" style="color:#E30F0F;">Microsoft Certified: Security, Compliance, and Identity Fundamentals</a> {{< /rawhtml >}}
-
-- {{< rawhtml >}}<a href="https://www.credly.com/badges/df27d85a-c984-491d-82aa-44a57fc9735d/public_url" target="_blank" style="color:#E30F0F;">Microsoft Certified: Azure Fundamentals</a> {{< /rawhtml >}}
+- {{< rawhtml >}}x86_64 Assembly Language and Shellcoding on Linux (SLAE64){{< /rawhtml >}}
 
 {{< rawhtml >}}
 <h3>Significant Courses</h3>
