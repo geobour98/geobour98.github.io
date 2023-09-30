@@ -10,7 +10,17 @@
       <link>https://geobour98.github.io/47</link>
     </image>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Wed, 19 Apr 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://geobour98.github.io/tags/shellcode/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 30 Sep 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://geobour98.github.io/tags/shellcode/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>VeraCrypt Stealer</title>
+      <link>https://geobour98.github.io/blog/veracrypt-stealer/</link>
+      <pubDate>Sat, 30 Sep 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://geobour98.github.io/blog/veracrypt-stealer/</guid>
+      <description>Introduction This blog post is about the assignment part of the course: Malware Development Intermediate, by sektor7. The course can be found here: MalDev Intermediate. The purpose of this assignment is to steal the password (without using a keylogger), which a user types to mount an encrypted disk (volume), created with VeraCrypt software. To achieve it, the assignment consists of 3 parts:
+ VCsniff: The tool API Monitor v2 64-bit was used to find the exact API call that deals with the password provided by the user.</description>
+    </item>
+    
     <item>
       <title>SLAE64 - Assignment #7 - Custom Crypter</title>
       <link>https://geobour98.github.io/blog/slae64-7-custom-crypter/</link>
