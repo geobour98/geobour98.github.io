@@ -54,11 +54,11 @@ params:
   profileMode:
     enabled: true # needs to be explicitly set
     title: George Bourlakis
-    subtitle: "Security Researcher"
+    subtitle: "Building and breaking stuff..."
     imageUrl: "logo.png"
     imageWidth: 178
     imageHeight: 170
-    imageTitle: Logo image
+    imageTitle: Logo
     buttons:
       - name: About
         url: /about/
@@ -75,17 +75,17 @@ params:
     Content: Welcome to my blog
 
   socialIcons:
-    - name: linkedin
-      url: "https://www.linkedin.com/in/George-Bourlakis/"
-    - name: github
-      url: "https://github.com/geobour98"
-    - name: email
+    - name: Email
       url: "mailto://geobour98@gmail.com"
-    - name: twitter
+    - name: GitHub
+      url: "https://github.com/geobour98"
+    - name: LinkedIn
+      url: "https://www.linkedin.com/in/George-Bourlakis/"
+    - name: Twitter
       url: "https://twitter.com/geobour98"
-    - name: discord
+    - name: Discord
       url: "https://discordapp.com/users/633947411672465419/"
-    - name: mastodon
+    - name: Mastodon
       url: "https://infosec.exchange/@geobour98"
 
 #  analytics:
