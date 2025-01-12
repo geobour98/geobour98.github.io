@@ -17,7 +17,9 @@ order: 3
 ## Certifications & Training
 
 :dart: <b>OSCP</b>, <b>CISSP</b>, <b>PJMR</b>, <b>CARTP</b>, <b>CRTP</b>, <b>SLAE64</b>, <b>SLAE32</b>, <b>RTO: MDI</b>, <b>RTO: MDE</b>  
-  
+
+<!-- Comment out HTB and THM profiles
+
 <div style="width:31%;text-align: left;">
     <h3>HackTheBox Profile</h3>
     <a href="https://app.hackthebox.com/users/401452" target="_blank"><img src="https://www.hackthebox.eu/badge/image/401452" alt="Hack The Box"></a></div>
@@ -31,3 +33,5 @@ order: 3
 
 
 - <b>Throwback Network (Attacking Windows Active Directory)</b>
+
+-->
