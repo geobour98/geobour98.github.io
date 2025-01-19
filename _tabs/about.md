@@ -4,19 +4,19 @@ icon: fas fa-info-circle
 order: 3
 ---
 
-:wave: Hello there, I'm George Bourlakis, security researcher with passion for software development.
+:wave: Hello there, I'm George Bourlakis, a security researcher with passion for low-level stuff.
 
-:computer: Interested in penetration testing, red teaming, malware development, reverse engineering, malware analysis and CTF challenges.
+:computer: I'm interested in software security, software/malware development, reverse engineering, and operating system internals.
 
 ## Education
 
 :mortar_board: <b>MSc in Cybersecurity</b>
 
-:mortar_board: <b>MEng in Computer Science and Engineering</b>
+:mortar_board: <b>MEng in Computer Engineering and Informatics</b>
 
 ## Certifications & Training
 
-:dart: <b>OSCP</b>, <b>CISSP</b>, <b>PJMR</b>, <b>CARTP</b>, <b>CRTP</b>, <b>SLAE64</b>, <b>SLAE32</b>, <b>RTO: MDI</b>, <b>RTO: MDE</b>  
+:dart: <b>OSCP</b>, <b>CISSP</b>, <b>PJMR</b>, <b>CARTP</b>, <b>CRTP</b>, <b>SLAE64</b>, <b>SLAE32</b>, <b>RTO: MDI</b>, <b>RTO: MDE</b>
 
 <!-- Comment out HTB and THM profiles
 
