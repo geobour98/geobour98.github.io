@@ -14,10 +14,6 @@
   icon: "fab fa-linkedin"     # icons powered by <https://fontawesome.com/>
   url:  "https://linkedin.com/in/george-bourlakis"
 
-- type: mastodon
-  icon: "fab fa-mastodon"     # icons powered by <https://fontawesome.com/>
-  url:  "https://infosec.exchange/@geobour98"
-
 - type: rss
   icon: "fas fa-rss"
 # Uncomment and complete the url below to enable more contact options
